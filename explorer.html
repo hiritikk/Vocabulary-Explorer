@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Vocabulary Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e0f;
+  --surface: #18181a;
+  --border: rgba(255,255,255,0.07);
+  --text: #f0ede6;
+  --muted: #7a7870;
+  --accent: #7aa4d4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-width: 430px;
+  margin: 0 auto;
+}
+
+.topbar {
+  padding: 14px 20px 12px;
+  display: flex; align-items: center; gap: 12px;
+  flex-shrink: 0;
+}
+.back-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--border);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background .15s;
+}
+.back-btn:active { background: #222; }
+.back-btn svg { width: 14px; height: 14px; fill: none; stroke: var(--muted); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.topbar-sub  { font-size: 11px; font-weight: 300; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 1px; }
+.topbar-word { font-family: 'Lora', serif; font-size: 18px; font-weight: 600; color: var(--text); }
+
+.filter-row {
+  display: flex; flex-shrink: 0;
+  padding: 0 20px;
+  overflow-x: auto; scrollbar-width: none;
+  border-bottom: 1px solid var(--border);
+}
+.filter-row::-webkit-scrollbar { display: none; }
+.ftab {
+  flex-shrink: 0;
+  padding: 9px 16px; font-size: 13px; color: var(--muted);
+  cursor: pointer; white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: color .18s, border-color .18s;
+  margin-bottom: -1px;
+}
+.ftab.active { color: var(--text); font-weight: 500; }
+
+/* lang toggle */
+.lang-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 20px 9px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+}
+.lang-label { font-size: 11px; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+.toggle-wrap {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 2px; gap: 2px;
+}
+.lang-btn {
+  padding: 4px 14px; border-radius: 99px;
+  border: none; background: transparent;
+  font-size: 12px; font-family: 'DM Sans', sans-serif;
+  color: var(--muted); cursor: pointer;
+  transition: all .18s;
+}
+.lang-btn.active {
+  background: var(--accent);
+  color: #0a1520;
+  font-weight: 500;
+}
+
+.graph-wrap { flex: 1; position: relative; overflow: hidden; min-height: 0; }
+canvas { display: block; touch-action: none; }
+
+.not-found {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  text-align: center; padding: 0 32px;
+}
+.not-found h2 { font-family: 'Lora', serif; font-size: 20px; font-weight: 600; margin-bottom: 8px; }
+.not-found p  { font-size: 14px; color: var(--muted); line-height: 1.5; }
+.not-found a  { display: inline-block; margin-top: 20px; font-size: 13px; color: var(--accent); text-decoration: none; }
+
+.sheet {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  background: #161618;
+  border-top: 1px solid var(--border);
+  border-radius: 20px 20px 0 0;
+  padding: 0 24px 48px;
+  transform: translateY(100%);
+  transition: transform .32s cubic-bezier(.32,0,.2,1);
+  z-index: 20; overflow-y: auto; scrollbar-width: none;
+}
+.sheet::-webkit-scrollbar { display: none; }
+.sheet.open { transform: translateY(0); }
+.handle { width: 36px; height: 4px; background: rgba(255,255,255,.1); border-radius: 2px; margin: 12px auto 20px; }
+.word-main  { font-family: 'Lora', serif; font-size: clamp(24px,7vw,32px); font-weight: 600; color: var(--text); line-height: 1.1; margin-bottom: 4px; }
+.word-trans { font-family: 'Lora', serif; font-style: italic; font-size: 14px; color: var(--muted); margin-bottom: 12px; }
+.meta-row   { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+.pos-badge  { font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 99px; letter-spacing: .05em; text-transform: uppercase; }
+.pronounc   { font-size: 13px; color: var(--muted); }
+.divider    { height: 1px; background: var(--border); margin: 0 0 16px; }
+.s-label    { font-size: 10px; font-weight: 500; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 6px; }
+.s-def      { font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 20px; }
+.s-ex       { font-family: 'Lora', serif; font-style: italic; font-size: 15px; color: #b0ada6; line-height: 1.6; }
+.close-btn  {
+  position: absolute; top: 16px; right: 20px;
+  width: 28px; height: 28px; border-radius: 50%;
+  background: rgba(255,255,255,.07); border: none;
+  cursor: pointer; color: var(--muted); font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" onclick="window.location.href='index.html'">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <div>
+    <div class="topbar-sub">Vocabulary Explorer</div>
+    <div class="topbar-word" id="topbarWord"></div>
+  </div>
+</div>
+
+<div class="filter-row" id="filterRow"></div>
+
+<div class="lang-row">
+  <span class="lang-label">Language</span>
+  <div class="toggle-wrap">
+    <button class="lang-btn active" id="btnEng"  onclick="setLang('english')">English</button>
+    <button class="lang-btn"        id="btnCree" onclick="setLang('cree')">Cree</button>
+  </div>
+</div>
+
+<div class="graph-wrap" id="graphWrap">
+  <canvas id="c"></canvas>
+  <div class="not-found" id="notFound" style="display:none">
+    <h2>Word not found</h2>
+    <p>We don't have that word yet.</p>
+    <a href="index.html">← Search again</a>
+  </div>
+</div>
+
+<div class="sheet" id="sheet">
+  <button class="close-btn" onclick="closeSheet()">✕</button>
+  <div class="handle"></div>
+  <div class="word-main"  id="sWord"></div>
+  <div class="word-trans" id="sTrans"></div>
+  <div class="meta-row">
+    <span class="pos-badge" id="sPos"></span>
+    <span class="pronounc"  id="sPronounc"></span>
+  </div>
+  <div class="divider"></div>
+  <div class="s-label">Definition</div>
+  <div class="s-def" id="sDef"></div>
+  <div class="s-label">Example</div>
+  <div class="s-ex"  id="sEx"></div>
+</div>
+
+<script>
+const FILTERS = [
+  { id:'category', label:'Category'        },
+  { id:'synonyms', label:'Synonyms'        },
+  { id:'antonyms', label:'Antonyms'        },
+  { id:'pos',      label:'Parts of speech' },
+];
+const TAB_COLOR = { category:'#9fc87a', synonyms:'#8bbfa8', antonyms:'#e07a54', pos:'#c8a96e' };
+const POS_COLORS = {
+  'adjective':'#7aa4d4','noun':'#c8a96e','verb':'#e07a54',
+  'verb (present participle)':'#e07a54','verb (past tense)':'#e07a54',
+  'adverb':'#9fc87a','noun / verb':'#8bbfa8','noun (plural)':'#c8a96e',
+};
+
+const DB = {
+  cool: {
+    eng:'cool', cree:'tahkâyâw', pos:'adjective', pronounc:'/kuːl/',
+    def:'Moderately cold; pleasantly low in temperature. Also used to describe a calm, composed, or fashionably impressive manner.',
+    ex:'The cool breeze off the lake made the summer evening perfect.',
+    category:['weather','temperature','personality'],
+    synonyms:['cold','chilly','chill','crisp'],
+    antonyms:['warm','hot'],
+    pos_forms:['cooling','coolly','coolness'],
+  },
+  walk: {
+    eng:'walk', cree:'pimohtêw', pos:'verb', pronounc:'/wɔːk/',
+    def:'To move at a regular pace by lifting and setting down each foot in turn.',
+    ex:'She decided to walk to work instead of taking the bus.',
+    category:['motion','exercise','travel'],
+    synonyms:['stroll','stride','amble'],
+    antonyms:['run','stop'],
+    pos_forms:['walking','walked','walker'],
+  },
+  bear: {
+    eng:'bear', cree:'maskwa', pos:'noun', pronounc:'/bɛr/',
+    def:'A large, heavy mammal with thick fur found across North America, Europe, and Asia.',
+    ex:'The bear lumbered through the forest, pausing to sniff the air.',
+    category:['animals','wildlife','land'],
+    synonyms:['grizzly','bruin'],
+    antonyms:[],
+    pos_forms:['bears','bearing','bearish'],
+  },
+};
+
+const SPOKE_WORDS = {
+  weather:     { eng:'weather',     cree:'kîsikâw',           pos:'noun',      pronounc:'/ˈwɛðər/',        def:'The state of the atmosphere at a given time and place.', ex:'The weather this morning was cool and overcast.' },
+  temperature: { eng:'temperature', cree:'kisikaw-kîsowâw',   pos:'noun',      pronounc:'/ˈtɛmprɪtʃər/',   def:'A measure of how hot or cold something is.', ex:'The temperature dropped overnight, leaving a cool frost on the grass.' },
+  personality: { eng:'personality', cree:'isi-iyiniwiwin',     pos:'noun',      pronounc:'/ˌpɜːrsəˈnælɪti/',def:'"Cool" as a personality trait implies calm confidence and social ease.', ex:'She had a cool personality — never flustered, always in control.' },
+  cold:        { eng:'cold',        cree:'tahkâyâw',           pos:'adjective', pronounc:'/koʊld/',          def:'At a low temperature; lacking warmth. More intense than cool.', ex:'The cold water was refreshing after the hike.' },
+  chilly:      { eng:'chilly',      cree:'tahkipayin',         pos:'adjective', pronounc:'/ˈtʃɪli/',        def:'Noticeably cold in a way that causes mild discomfort.', ex:'It was a chilly morning, so she grabbed her jacket.' },
+  chill:       { eng:'chill',       cree:'tahkâstêw',          pos:'noun / verb',pronounc:'/tʃɪl/',         def:'A sensation of cold. As a verb, to make or become cold.', ex:'There was a chill in the air as the sun went down.' },
+  crisp:       { eng:'crisp',       cree:'pakitahwâw',         pos:'adjective', pronounc:'/krɪsp/',          def:'Pleasantly cool and fresh. Often describes clean, dry, cold air.', ex:'The crisp autumn air smelled of fallen leaves and pine.' },
+  warm:        { eng:'warm',        cree:'kisâstêw',           pos:'adjective', pronounc:'/wɔːrm/',          def:'Having a moderate degree of heat. The direct opposite of cool.', ex:'The warm afternoon sun made the patio a perfect place to sit.' },
+  hot:         { eng:'hot',         cree:'kisâstêsiw',         pos:'adjective', pronounc:'/hɒt/',            def:'Having a high degree of heat. Intense opposite of cool.', ex:'It was so hot outside that the pavement was shimmering.' },
+  cooling:     { eng:'cooling',     cree:'tahkâstamâkewin',    pos:'verb (present participle)', pronounc:'/ˈkuːlɪŋ/', def:'The process of becoming or making something cooler.', ex:'The cooling wind was a relief after hours in the sun.' },
+  coolly:      { eng:'coolly',      cree:'tahkâyâwîhk',        pos:'adverb',    pronounc:'/ˈkuːlli/',       def:'In a calm and unemotional way.', ex:'She coolly accepted the award, as if she had expected it all along.' },
+  coolness:    { eng:'coolness',    cree:'tahkâyâwin',         pos:'noun',      pronounc:'/ˈkuːlnəs/',      def:'The quality of being cool in temperature, or calm and composed.', ex:'The coolness of the evening air was a welcome change from the heat.' },
+  motion:      { eng:'motion',      cree:'pimohtêwin',         pos:'noun',      pronounc:'/ˈmoʊʃən/',        def:'The action or process of moving or being moved.', ex:'The gentle motion of the boat lulled him to sleep.' },
+  exercise:    { eng:'exercise',    cree:'mâmitonêyihcikan',   pos:'noun',      pronounc:'/ˈɛksərsaɪz/',    def:'Activity requiring physical effort, carried out to sustain health.', ex:'Walking is one of the best forms of exercise.' },
+  travel:      { eng:'travel',      cree:'pimohtewin',         pos:'noun',      pronounc:'/ˈtrævəl/',        def:'The act of going from one place to another.', ex:'Her travel took her across three provinces on foot.' },
+  stroll:      { eng:'stroll',      cree:'pimohtatowin',       pos:'verb',      pronounc:'/stroʊl/',         def:'To walk in a leisurely way.', ex:'They strolled along the river in the evening light.' },
+  stride:      { eng:'stride',      cree:'misi-pimohtêw',      pos:'verb',      pronounc:'/straɪd/',         def:'To walk with long, decisive steps.', ex:'She strode confidently into the meeting room.' },
+  amble:       { eng:'amble',       cree:'nehta-pimohtêw',     pos:'verb',      pronounc:'/ˈæmbəl/',        def:'To walk at a slow, relaxed pace.', ex:'They ambled through the market, stopping at each stall.' },
+  run:         { eng:'run',         cree:'pimipayiw',          pos:'verb',      pronounc:'/rʌn/',            def:'To move swiftly on foot.', ex:'She had to run to catch the last bus.' },
+  stop:        { eng:'stop',        cree:'nakî',               pos:'verb',      pronounc:'/stɒp/',           def:'To cease moving or operating.', ex:'He stopped at the corner and looked both ways.' },
+  walking:     { eng:'walking',     cree:'pimohtêwin',         pos:'verb (present participle)', pronounc:'/ˈwɔːkɪŋ/', def:'Moving on foot at a regular pace.', ex:'Walking to school every day keeps her fit.' },
+  walked:      { eng:'walked',      cree:'pimohtêw êkwa',      pos:'verb (past tense)', pronounc:'/wɔːkt/', def:'Past tense of walk.', ex:'He walked all the way home after the concert.' },
+  walker:      { eng:'walker',      cree:'pimohtêskwêw',       pos:'noun',      pronounc:'/ˈwɔːkər/',       def:'A person who walks, especially for exercise or pleasure.', ex:'She is an avid walker who logs ten kilometres every morning.' },
+  animals:     { eng:'animals',     cree:'pisiskiwak',         pos:'noun',      pronounc:'/ˈænɪməlz/',      def:'Living organisms that feed on organic matter.', ex:'The forest was full of animals at dawn.' },
+  wildlife:    { eng:'wildlife',    cree:'pisiskiwak',         pos:'noun',      pronounc:'/ˈwaɪldlaɪf/',    def:'Wild animals and plants living in their natural environment.', ex:'The park protects the wildlife of the boreal forest.' },
+  land:        { eng:'land',        cree:'askiy',              pos:'noun',      pronounc:'/lænd/',           def:'The solid surface of the earth. In Cree, askiy carries deep spiritual meaning.', ex:'The bear roamed the land freely.' },
+  grizzly:     { eng:'grizzly',     cree:'wâhkôhtowin-maskwa', pos:'noun',      pronounc:'/ˈɡrɪzli/',       def:'A large subspecies of brown bear found in North America.', ex:'The grizzly bear stood on its hind legs to get a better view.' },
+  bruin:       { eng:'bruin',       cree:'maskwa-atayôhkan',   pos:'noun',      pronounc:'/ˈbruːɪn/',       def:'An old literary word for a bear, from Dutch folklore.', ex:'Old bruin shambled through the berry patch at dusk.' },
+  bears:       { eng:'bears',       cree:'maskwak',            pos:'noun (plural)', pronounc:'/bɛrz/',      def:'More than one bear. maskwak is the plural form in Cree.', ex:'Two bears were spotted near the river this morning.' },
+  bearing:     { eng:'bearing',     cree:'maskwa-isi',         pos:'noun / verb',pronounc:'/ˈbɛrɪŋ/',      def:'Carrying or enduring something. Also a person\'s way of standing or moving.', ex:'She carried herself with the bearing of someone who knows their worth.' },
+  bearish:     { eng:'bearish',     cree:'maskwa-iyiniwiw',    pos:'adjective', pronounc:'/ˈbɛrɪʃ/',       def:'Resembling a bear in size or manner.', ex:'He had a bearish outlook on the economy this quarter.' },
+};
+
+// ── state ──
+const params  = new URLSearchParams(window.location.search);
+const urlWord = (params.get('word') || 'cool').toLowerCase();
+const hubData = DB[urlWord];
+
+let activeFilter = 'category';
+let lang         = 'english'; // 'english' | 'cree'
+let curNodes     = null;
+let animating    = false, raf = null;
+
+// ── offscreen measure ──
+const mCtx = document.createElement('canvas').getContext('2d');
+function measure(text, font){ mCtx.font = font; return mCtx.measureText(text).width; }
+
+// ── helpers ──
+// primary = the "big" top label, translation = smaller italic below
+function primary(w)     { return lang === 'cree' ? w.cree : w.eng; }
+function translation(w) { return lang === 'cree' ? w.eng  : w.cree; }
+
+function spokeRadius(w, W, H){
+  const base = Math.min(W, H);
+  const font = `500 ${Math.round(base * 0.032)}px DM Sans, sans-serif`;
+  const tw   = measure(primary(w), font);
+  return Math.max(base * 0.095, Math.min(base * 0.19, tw / 2 + base * 0.052));
+}
+function hubRadius(W, H){ return Math.min(W, H) * 0.145; }
+
+function setSheetHeight(){
+  document.getElementById('sheet').style.maxHeight =
+    Math.round(window.innerHeight * 0.52) + 'px';
+}
+
+// ── init ──
+if(!hubData){
+  document.getElementById('filterRow').style.display = 'none';
+  document.getElementById('notFound').style.display  = 'block';
+} else {
+  document.getElementById('topbarWord').textContent = hubData.eng;
+  document.title = hubData.eng + ' — Vocabulary Explorer';
+  setSheetHeight();
+  buildFilters();
+  renderCurrent(false);
+}
+
+function buildFilters(){
+  document.getElementById('filterRow').innerHTML = FILTERS.map(f=>`
+    <div class="ftab${f.id===activeFilter?' active':''}"
+         style="${f.id===activeFilter?`border-bottom-color:${TAB_COLOR[f.id]};color:var(--text)`:''}"
+         onclick="selectFilter('${f.id}')">${f.label}</div>
+  `).join('');
+}
+function selectFilter(fid){ activeFilter=fid; buildFilters(); renderCurrent(true); }
+
+function setLang(l){
+  lang = l;
+  document.getElementById('btnEng').classList.toggle('active',  l==='english');
+  document.getElementById('btnCree').classList.toggle('active', l==='cree');
+  renderCurrent(false);
+}
+
+function getSpokeIds(){
+  if(!hubData) return [];
+  const map = { category:'category', synonyms:'synonyms', antonyms:'antonyms', pos:'pos_forms' };
+  return hubData[map[activeFilter]] || [];
+}
+
+// ── layout ──
+function buildLayout(){
+  const cv = document.getElementById('c');
+  const W  = cv.width, H = cv.height;
+  const cx = W/2, cy = H/2;
+  const spokeIds = getSpokeIds();
+  const n  = spokeIds.length;
+  const hR = hubRadius(W, H);
+
+  const spokes = spokeIds.map(id => {
+    const w = SPOKE_WORDS[id] || { eng:id, cree:'—', pos:'', pronounc:'', def:'', ex:'' };
+    return { ...w, id, r: spokeRadius(w, W, H) };
+  });
+
+  const maxSR  = spokes.reduce((m,s)=>Math.max(m,s.r), 0);
+  const gap    = Math.min(W,H) * 0.08;
+  const orbit  = Math.min(hR + gap + maxSR, Math.min(W,H)*0.5 - maxSR - 8);
+
+  spokes.forEach((sp,i)=>{
+    const a = n===1 ? -Math.PI/2 : (2*Math.PI*i/n) - Math.PI/2;
+    sp.x = cx + orbit*Math.cos(a);
+    sp.y = cy + orbit*Math.sin(a);
+  });
+
+  return { hub:{ ...hubData, id:urlWord, x:cx, y:cy, r:hR }, spokes };
+}
+
+// ── draw ──
+function drawScene(nodes, alpha){
+  const cv  = document.getElementById('c');
+  const ctx = cv.getContext('2d');
+  const W=cv.width, H=cv.height;
+  const col = TAB_COLOR[activeFilter];
+  const { hub, spokes } = nodes;
+  const base = Math.min(W,H);
+
+  // font sizes — all relative to screen
+  const spPrimSz  = Math.round(base * 0.032);
+  const spSubSz   = Math.round(base * 0.024);
+  const hubPrimSz = Math.round(base * 0.052);
+  const hubSubSz  = Math.round(base * 0.028);
+
+  ctx.save();
+  ctx.globalAlpha = alpha;
+
+  // edges
+  spokes.forEach(sp=>{
+    ctx.beginPath(); ctx.moveTo(hub.x,hub.y); ctx.lineTo(sp.x,sp.y);
+    ctx.strokeStyle = col+'38'; ctx.lineWidth = 0.9;
+    if(activeFilter==='antonyms'){ ctx.setLineDash([4,4]); ctx.lineWidth=1; }
+    else ctx.setLineDash([]);
+    ctx.stroke(); ctx.setLineDash([]);
+  });
+
+  // ── spoke nodes ──
+  spokes.forEach(sp=>{
+    ctx.beginPath(); ctx.arc(sp.x,sp.y,sp.r,0,Math.PI*2);
+    ctx.fillStyle='#18181a'; ctx.fill();
+    ctx.strokeStyle=col+'90'; ctx.lineWidth=0.9; ctx.stroke();
+
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+
+    const prim  = primary(sp);
+    const trans = translation(sp);
+    const primIsItalic = lang==='cree';
+
+    // primary label — sits slightly above center
+    ctx.fillStyle='#f0ede6';
+    ctx.font=`${primIsItalic?'italic ':''}500 ${spPrimSz}px '${primIsItalic?'Lora':'DM Sans'}',sans-serif`;
+    ctx.fillText(clip(ctx, prim, sp.r*1.75), sp.x, sp.y - sp.r*0.2);
+
+    // translation — small italic below
+    ctx.font=`italic 300 ${spSubSz}px 'Lora',serif`;
+    ctx.fillStyle='#7a7870';
+    ctx.fillText(clip(ctx, trans, sp.r*1.75), sp.x, sp.y + sp.r*0.3);
+  });
+
+  // ── hub ──
+  ctx.beginPath(); ctx.arc(hub.x,hub.y,hub.r+base*0.04,0,Math.PI*2);
+  ctx.fillStyle=col+'10'; ctx.fill();
+  ctx.beginPath(); ctx.arc(hub.x,hub.y,hub.r+base*0.012,0,Math.PI*2);
+  ctx.strokeStyle=col+'28'; ctx.lineWidth=1; ctx.stroke();
+  ctx.beginPath(); ctx.arc(hub.x,hub.y,hub.r,0,Math.PI*2);
+  ctx.fillStyle='#18181a'; ctx.fill();
+  ctx.strokeStyle=col; ctx.lineWidth=2; ctx.stroke();
+
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+
+  const hPrim  = primary(hub);
+  const hTrans = translation(hub);
+  const hPrimIsItalic = lang==='cree';
+
+  ctx.fillStyle='#f0ede6';
+  ctx.font=`${hPrimIsItalic?'italic ':''}600 ${hubPrimSz}px 'Lora',serif`;
+  ctx.fillText(hPrim,  hub.x, hub.y - hub.r*0.18);
+
+  ctx.font=`italic 300 ${hubSubSz}px 'Lora',serif`;
+  ctx.fillStyle='#7a7870';
+  ctx.fillText(hTrans, hub.x, hub.y + hub.r*0.28);
+
+  ctx.restore();
+}
+
+function clip(ctx,text,maxW){
+  if(!text) return '';
+  if(ctx.measureText(text).width<=maxW) return text;
+  let t=text; while(t.length>2&&ctx.measureText(t+'…').width>maxW) t=t.slice(0,-1);
+  return t+'…';
+}
+
+function eio(t){ return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2; }
+
+function animateTo(oldN,newN){
+  if(raf) cancelAnimationFrame(raf);
+  animating=true;
+  const cv=document.getElementById('c');
+  const ctx=cv.getContext('2d');
+  const W=cv.width,H=cv.height;
+  const t0=performance.now();
+  function step(now){
+    const t=Math.min((now-t0)/270,1);
+    ctx.clearRect(0,0,W,H);
+    if(t<0.5&&oldN) drawScene(oldN,1-eio(t*2));
+    if(t>0.4)       drawScene(newN,eio((t-0.4)/0.6));
+    if(t<1) raf=requestAnimationFrame(step);
+    else { animating=false; curNodes=newN; }
+  }
+  raf=requestAnimationFrame(step);
+}
+
+function initCanvas(){
+  const cv=document.getElementById('c');
+  const wrap=document.getElementById('graphWrap');
+  cv.width=wrap.clientWidth; cv.height=wrap.clientHeight;
+}
+
+function renderCurrent(doAnim=false){
+  if(!hubData) return;
+  initCanvas();
+  const newN=buildLayout();
+  if(doAnim&&curNodes) animateTo(curNodes,newN);
+  else {
+    const cv=document.getElementById('c');
+    cv.getContext('2d').clearRect(0,0,cv.width,cv.height);
+    drawScene(newN,1); curNodes=newN;
+  }
+}
+
+// ── tap ──
+function hitNode(px,py){
+  if(!curNodes) return null;
+  const {hub,spokes}=curNodes;
+  for(const sp of spokes){ if(Math.hypot(sp.x-px,sp.y-py)<sp.r+12) return sp; }
+  if(Math.hypot(hub.x-px,hub.y-py)<hub.r+12) return hub;
+  return null;
+}
+function handleTap(px,py){
+  if(animating) return;
+  const hit=hitNode(px,py);
+  if(!hit){ closeSheet(); return; }
+  openSheet(hit);
+}
+
+const cv=document.getElementById('c');
+let tsx=0,tsy=0,tmv=false;
+cv.addEventListener('touchstart',e=>{ const t=e.touches[0]; tsx=t.clientX; tsy=t.clientY; tmv=false; },{passive:true});
+cv.addEventListener('touchmove', e=>{ const t=e.touches[0]; if(Math.hypot(t.clientX-tsx,t.clientY-tsy)>8) tmv=true; },{passive:true});
+cv.addEventListener('touchend',  e=>{
+  if(tmv) return;
+  const r=cv.getBoundingClientRect(),t=e.changedTouches[0];
+  handleTap(t.clientX-r.left,t.clientY-r.top);
+});
+cv.addEventListener('click',e=>{
+  const r=cv.getBoundingClientRect();
+  handleTap(e.clientX-r.left,e.clientY-r.top);
+});
+
+// ── sheet — always shows both, primary on top ──
+function openSheet(w){
+  const posCol=POS_COLORS[w.pos]||'#888';
+  document.getElementById('sWord').textContent     = primary(w);
+  document.getElementById('sTrans').textContent    = translation(w);
+  document.getElementById('sPronounc').textContent = w.pronounc;
+  const posEl=document.getElementById('sPos');
+  posEl.textContent=w.pos;
+  posEl.style.background=posCol+'20';
+  posEl.style.color=posCol;
+  posEl.style.border=`1px solid ${posCol}35`;
+  document.getElementById('sDef').textContent=w.def;
+  document.getElementById('sEx').textContent=w.ex;
+  document.getElementById('sheet').classList.add('open');
+}
+function closeSheet(){ document.getElementById('sheet').classList.remove('open'); }
+
+let shty=0;
+const sh=document.getElementById('sheet');
+sh.addEventListener('touchstart',e=>{ shty=e.touches[0].clientY; },{passive:true});
+sh.addEventListener('touchend',  e=>{ if(e.changedTouches[0].clientY-shty>55) closeSheet(); },{passive:true});
+
+window.addEventListener('resize',()=>{ setSheetHeight(); renderCurrent(false); });
+</script>
+</body>
+</html>

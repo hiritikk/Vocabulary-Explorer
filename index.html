@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Vocabulary Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0e0e0f;
+  --surface: #18181a;
+  --border: rgba(255,255,255,0.07);
+  --text: #f0ede6;
+  --muted: #7a7870;
+  --accent: #7aa4d4;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+.logo-wrap {
+  text-align: center;
+  margin-bottom: 48px;
+}
+.logo-sub {
+  font-size: 11px;
+  font-weight: 300;
+  color: var(--muted);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.logo-title {
+  font-family: 'Lora', serif;
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.15;
+}
+.logo-title span {
+  color: var(--accent);
+}
+
+.search-wrap {
+  width: 100%;
+  position: relative;
+}
+.search-input {
+  width: 100%;
+  padding: 14px 48px 14px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text);
+  outline: none;
+  transition: border-color .2s;
+  -webkit-appearance: none;
+}
+.search-input::placeholder { color: var(--muted); }
+.search-input:focus { border-color: var(--accent); }
+
+.search-btn {
+  position: absolute;
+  right: 10px; top: 50%;
+  transform: translateY(-50%);
+  width: 34px; height: 34px;
+  border-radius: 10px;
+  background: var(--accent);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity .15s;
+}
+.search-btn:active { opacity: .75; }
+.search-btn svg { width: 16px; height: 16px; fill: none; stroke: #0e1a24; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+.hint-text {
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="logo-wrap">
+  <div class="logo-sub">nêhiyawêwin</div>
+  <div class="logo-title">Vocabulary<br><span>Explorer</span></div>
+</div>
+
+<div class="search-wrap">
+  <input
+    class="search-input"
+    id="searchInput"
+    type="text"
+    placeholder="Search a word…"
+    autocomplete="off"
+    autocorrect="off"
+    spellcheck="false"
+    onkeydown="if(event.key==='Enter') goSearch()"
+  >
+  <button class="search-btn" onclick="goSearch()">
+    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+  </button>
+</div>
+<div class="hint-text">Try "cool", "walk", or "bear"</div>
+
+<script>
+function goSearch(){
+  const q = document.getElementById('searchInput').value.trim();
+  if(!q) return;
+  window.location.href = `explorer.html?word=${encodeURIComponent(q.toLowerCase())}`;
+}
+</script>
+</body>
+</html>
