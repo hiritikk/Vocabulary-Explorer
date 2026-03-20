@@ -15,116 +15,395 @@
   --accent: #7aa4d4;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; }
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  max-width: 430px;
-  margin: 0 auto;
-  padding: 0 28px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  max-width: 430px; margin: 0 auto;
+  padding: 0 28px; min-height: 100dvh;
 }
 
-.logo-wrap {
-  text-align: center;
-  margin-bottom: 48px;
+.top-bar {
+  position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 430px;
+  display: flex; justify-content: flex-end;
+  padding: 14px 20px; z-index: 10;
 }
+.toggle-wrap {
+  display: flex; background: var(--surface);
+  border: 1px solid var(--border); border-radius: 99px;
+  padding: 2px; gap: 2px;
+}
+.lang-btn {
+  padding: 5px 14px; border-radius: 99px; border: none;
+  background: transparent; font-size: 12px;
+  font-family: 'DM Sans', sans-serif;
+  color: var(--muted); cursor: pointer; transition: all .18s;
+}
+.lang-btn.active { background: var(--accent); color: #0a1520; font-weight: 500; }
+
+.logo-wrap { text-align: center; margin-bottom: 44px; }
 .logo-sub {
-  font-size: 11px;
-  font-weight: 300;
-  color: var(--muted);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
+  font-size: 11px; font-weight: 300; color: var(--muted);
+  letter-spacing: .1em; text-transform: uppercase; margin-bottom: 10px;
 }
 .logo-title {
   font-family: 'Lora', serif;
-  font-size: 30px;
-  font-weight: 600;
-  color: var(--text);
-  line-height: 1.15;
+  font-size: clamp(28px, 8vw, 36px);
+  font-weight: 600; color: var(--text); line-height: 1.2;
 }
-.logo-title span {
-  color: var(--accent);
-}
+.logo-title span { color: var(--accent); }
 
-.search-wrap {
-  width: 100%;
-  position: relative;
-}
+/* search + dropdown wrapper */
+.search-outer { width: 100%; position: relative; }
+
+.search-wrap { width: 100%; position: relative; }
 .search-input {
-  width: 100%;
-  padding: 14px 48px 14px 18px;
-  border-radius: 14px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 16px;
-  font-weight: 400;
-  color: var(--text);
-  outline: none;
-  transition: border-color .2s;
+  width: 100%; padding: 15px 52px 15px 18px;
+  border-radius: 14px; border: 1px solid var(--border);
+  background: var(--surface); font-family: 'DM Sans', sans-serif;
+  font-size: 16px; font-weight: 400; color: var(--text);
+  outline: none; transition: border-color .2s, border-radius .15s;
   -webkit-appearance: none;
 }
 .search-input::placeholder { color: var(--muted); }
-.search-input:focus { border-color: var(--accent); }
+.search-input:focus { border-color: rgba(122,164,212,0.4); }
+.search-input.open { border-radius: 14px 14px 0 0; border-bottom-color: transparent; }
 
 .search-btn {
-  position: absolute;
-  right: 10px; top: 50%;
-  transform: translateY(-50%);
-  width: 34px; height: 34px;
-  border-radius: 10px;
-  background: var(--accent);
-  border: none; cursor: pointer;
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 10px;
+  background: var(--accent); border: none; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: opacity .15s;
 }
 .search-btn:active { opacity: .75; }
-.search-btn svg { width: 16px; height: 16px; fill: none; stroke: #0e1a24; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.search-btn svg { width: 16px; height: 16px; fill: none; stroke: #0a1520; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
-.hint-text {
-  margin-top: 14px;
-  font-size: 12px;
-  color: var(--muted);
-  text-align: center;
+/* dropdown */
+.dropdown {
+  display: none;
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--surface);
+  border: 1px solid rgba(122,164,212,0.4);
+  border-top: none;
+  border-radius: 0 0 14px 14px;
+  overflow: hidden;
+  z-index: 20;
+  max-height: 260px;
+  overflow-y: auto;
+  scrollbar-width: none;
 }
+.dropdown::-webkit-scrollbar { display: none; }
+.dropdown.visible { display: block; }
+
+.drop-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background .12s;
+}
+.drop-item:last-child { border-bottom: none; }
+.drop-item:hover, .drop-item.focused { background: rgba(255,255,255,.04); }
+
+.drop-primary {
+  font-size: 15px; font-weight: 500; color: var(--text);
+  flex: 1; min-width: 0;
+}
+.drop-primary em {
+  font-style: normal; color: var(--accent);
+}
+.drop-secondary {
+  font-family: 'Lora', serif; font-style: italic;
+  font-size: 12px; color: var(--muted);
+  flex-shrink: 0;
+}
+.drop-tag {
+  font-size: 10px; font-weight: 500; letter-spacing: .05em;
+  padding: 2px 7px; border-radius: 99px;
+  background: rgba(122,164,212,0.12);
+  color: var(--accent); flex-shrink: 0;
+}
+.drop-divider {
+  padding: 6px 16px 4px;
+  font-size: 10px; font-weight: 500; color: var(--muted);
+  letter-spacing: .07em; text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+}
+.drop-empty {
+  padding: 16px; font-size: 13px; color: var(--muted); text-align: center;
+}
+
+.hint { margin-top: 14px; font-size: 12px; color: var(--muted); text-align: center; }
+.hint span { color: rgba(122,164,212,0.6); cursor: pointer; transition: color .15s; }
+.hint span:hover { color: var(--accent); }
 </style>
 </head>
 <body>
 
-<div class="logo-wrap">
-  <div class="logo-sub">nêhiyawêwin</div>
-  <div class="logo-title">Vocabulary<br><span>Explorer</span></div>
+<div class="top-bar">
+  <div class="toggle-wrap">
+    <button class="lang-btn" id="btnEng"  onclick="setLang('english')">English</button>
+    <button class="lang-btn" id="btnCree" onclick="setLang('cree')">Cree</button>
+  </div>
 </div>
 
-<div class="search-wrap">
-  <input
-    class="search-input"
-    id="searchInput"
-    type="text"
-    placeholder="Search a word in cree or english"
-    autocomplete="off"
-    autocorrect="off"
-    spellcheck="false"
-    onkeydown="if(event.key==='Enter') goSearch()"
-  >
-  <button class="search-btn" onclick="goSearch()">
-    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
-  </button>
+<div class="logo-wrap">
+  <div class="logo-sub" id="logoSub">nêhiyawêwin</div>
+  <div class="logo-title" id="logoTitle">Vocabulary<br><span style="color:var(--accent)" id="logoSpan">Explorer</span></div>
 </div>
-<div class="hint-text">Try "cool", "walk", or "bear"</div>
+
+<div class="search-outer">
+  <div class="search-wrap">
+    <input
+      class="search-input" id="searchInput" type="text"
+      autocomplete="off" autocorrect="off" spellcheck="false"
+      oninput="onInput()"
+      onkeydown="onKeyDown(event)"
+      onfocus="onInputFocus()"
+    >
+    <button class="search-btn" onclick="goSearch()">
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+    </button>
+  </div>
+  <div class="dropdown" id="dropdown"></div>
+</div>
+
+<div class="hint" id="hintText"></div>
 
 <script>
-function goSearch(){
-  const q = document.getElementById('searchInput').value.trim();
-  if(!q) return;
-  window.location.href = `explorer.html?word=${encodeURIComponent(q.toLowerCase())}`;
+// ── word database — same as explorer ──
+const WORDS = [
+  { key:'cool',  eng:'cool',  cree:'tahkâyâw', pos:'adjective' },
+  { key:'walk',  eng:'walk',  cree:'pimohcêw',  pos:'verb'      },
+  { key:'bear',  eng:'bear',  cree:'maskwa',    pos:'noun'      },
+  // spoke words that also have confirmed Cree
+  { key:'cold',  eng:'cold',  cree:'kisinâw',   pos:'adjective', spoke:true },
+  { key:'warm',  eng:'warm',  cree:'kisâstêw',  pos:'adjective', spoke:true },
+  { key:'hot',   eng:'hot',   cree:'kisâstêw',  pos:'adjective', spoke:true },
+  { key:'weather',eng:'weather',cree:'kîsikâw', pos:'noun',      spoke:true },
+  { key:'travel',eng:'travel', cree:'pimaham',  pos:'verb',      spoke:true },
+  { key:'animals',eng:'animals',cree:'pisiskiwak',pos:'noun',    spoke:true },
+  { key:'land',  eng:'land',  cree:'askiy',     pos:'noun',      spoke:true },
+  { key:'bears', eng:'bears', cree:'maskwak',   pos:'noun',      spoke:true },
+];
+
+// spoke words navigate to their parent hub
+const SPOKE_PARENT = {
+  cold:'cool', warm:'cool', hot:'cool', weather:'cool',
+  travel:'walk', animals:'bear', land:'bear', bears:'bear',
+};
+
+// ── fuzzy match helpers ──
+// strip Cree diacritics: â→a, ê→e, î→i, ô→o, ý→y
+function norm(s){
+  return s.toLowerCase()
+    .replace(/[âā]/g,'a')
+    .replace(/[êē]/g,'e')
+    .replace(/[îī]/g,'i')
+    .replace(/[ôō]/g,'o')
+    .replace(/[ýÿ]/g,'y');
 }
+
+// highlight matching part in a string
+function highlight(text, q){
+  if(!q) return text;
+  const nText=norm(text), nQ=norm(q);
+  const idx=nText.indexOf(nQ);
+  if(idx<0) return text;
+  return text.slice(0,idx)+'<em>'+text.slice(idx,idx+q.length)+'</em>'+text.slice(idx+q.length);
+}
+
+// score a word against query (lower = better)
+function score(w, nq){
+  const ne=norm(w.eng), nc=norm(w.cree);
+  if(ne===nq||nc===nq) return 0;
+  if(ne.startsWith(nq)||nc.startsWith(nq)) return 1;
+  if(ne.includes(nq)||nc.includes(nq)) return 2;
+  return 99;
+}
+
+function search(q){
+  if(!q||q.length<1) return [];
+  const nq=norm(q);
+  return WORDS
+    .map(w=>({ w, s:score(w,nq) }))
+    .filter(x=>x.s<99)
+    .sort((a,b)=>a.s-b.s||a.w.eng.localeCompare(b.w.eng))
+    .map(x=>x.w);
+}
+
+// ── UI ──
+const UI = {
+  english: {
+    sub:'nêhiyawêwin', title:'Vocabulary', span:'Explorer',
+    placeholder:'Search a word…',
+    hint:'Try', hintWords:['cool','walk','bear'],
+    noResults:'No results. Try spelling it differently.',
+    tagLabel: w => w.pos,
+  },
+  cree: {
+    sub:'Plains Cree Dictionary', title:'itwêwina', span:'kâ-nisitohtahk',
+    placeholder:'mâhkiya pîkiskwêwin…',
+    hint:'mâmitonêyihtamok', hintWords:['tahkâyâw','pimohcêw','maskwa'],
+    noResults:'namôya kiskêyihtâkwan. isi-mâhkiya.',
+    tagLabel: w => w.pos,
+  },
+};
+
+const CREE_HINT_KEYS = { 'tahkâyâw':'cool','pimohcêw':'walk','maskwa':'bear' };
+
+let lang = localStorage.getItem('veLang') || 'english';
+let focusedIdx = -1;
+let currentResults = [];
+
+function setLang(l){
+  lang=l;
+  localStorage.setItem('veLang',l);
+  applyUI();
+  closeDropdown();
+  document.getElementById('searchInput').value='';
+}
+
+function applyUI(){
+  const u=UI[lang];
+  document.getElementById('btnEng').classList.toggle('active',lang==='english');
+  document.getElementById('btnCree').classList.toggle('active',lang==='cree');
+  document.getElementById('logoSub').textContent=u.sub;
+  document.getElementById('logoTitle').innerHTML=
+    `${u.title}<br><span style="color:var(--accent)">${u.span}</span>`;
+  document.getElementById('searchInput').placeholder=u.placeholder;
+  const hintEl=document.getElementById('hintText');
+  hintEl.innerHTML=u.hint+' '+u.hintWords.map(w=>
+    `<span onclick="goWord('${w}')">${w}</span>`
+  ).join(', ');
+}
+
+function goWord(w){
+  // if Cree hint, resolve to key
+  const key = CREE_HINT_KEYS[w] || w;
+  window.location.href=`explorer.html?word=${encodeURIComponent(key)}`;
+}
+
+function goSearch(){
+  const q=document.getElementById('searchInput').value.trim();
+  if(!q) return;
+  // pick first result if any
+  const res=search(q);
+  const word = res[0] || null;
+  if(word){
+    const dest = SPOKE_PARENT[word.key] || word.key;
+    window.location.href=`explorer.html?word=${encodeURIComponent(dest)}`;
+  }
+}
+
+function goResult(w){
+  const dest = SPOKE_PARENT[w.key] || w.key;
+  window.location.href=`explorer.html?word=${encodeURIComponent(dest)}`;
+}
+
+// ── dropdown ──
+function onInput(){
+  const q=document.getElementById('searchInput').value.trim();
+  focusedIdx=-1;
+  if(!q){ closeDropdown(); return; }
+  currentResults=search(q);
+  renderDropdown(q);
+}
+
+function onInputFocus(){
+  const q=document.getElementById('searchInput').value.trim();
+  if(q&&currentResults.length) renderDropdown(q);
+}
+
+function renderDropdown(q){
+  const dd=document.getElementById('dropdown');
+  const inp=document.getElementById('searchInput');
+
+  if(!currentResults.length){
+    dd.innerHTML=`<div class="drop-empty">${UI[lang].noResults}</div>`;
+    dd.classList.add('visible');
+    inp.classList.add('open');
+    return;
+  }
+
+  // separate hub words from spoke words
+  const hubs=currentResults.filter(w=>!w.spoke);
+  const spokes=currentResults.filter(w=>w.spoke);
+
+  let html='';
+
+  if(hubs.length){
+    hubs.forEach((w,i)=>{
+      const isPrimCree = lang==='cree' && w.cree;
+      const primary   = isPrimCree ? highlight(w.cree,q) : highlight(w.eng,q);
+      const secondary = isPrimCree ? w.eng : w.cree;
+      html+=`<div class="drop-item" onclick="goResult(${JSON.stringify(w)})" data-idx="${i}">
+        <div class="drop-primary">${primary}</div>
+        <span class="drop-secondary">${secondary}</span>
+        <span class="drop-tag">${w.pos}</span>
+      </div>`;
+    });
+  }
+
+  if(spokes.length){
+    html+=`<div class="drop-divider">${lang==='cree'?'kâ-wîci-pîkiskwâtêmakak':'related words'}</div>`;
+    spokes.forEach((w,i)=>{
+      const isPrimCree = lang==='cree' && w.cree;
+      const primary   = isPrimCree ? highlight(w.cree,q) : highlight(w.eng,q);
+      const secondary = isPrimCree ? w.eng : w.cree;
+      const parentKey = SPOKE_PARENT[w.key]||w.key;
+      html+=`<div class="drop-item" onclick="window.location.href='explorer.html?word=${encodeURIComponent(parentKey)}'" data-idx="${hubs.length+i}">
+        <div class="drop-primary">${primary}</div>
+        <span class="drop-secondary">${secondary}</span>
+        <span class="drop-tag">${w.pos}</span>
+      </div>`;
+    });
+  }
+
+  dd.innerHTML=html;
+  dd.classList.add('visible');
+  inp.classList.add('open');
+}
+
+function closeDropdown(){
+  document.getElementById('dropdown').classList.remove('visible');
+  document.getElementById('searchInput').classList.remove('open');
+  focusedIdx=-1;
+}
+
+// keyboard navigation
+function onKeyDown(e){
+  const items=document.querySelectorAll('.drop-item');
+  if(e.key==='ArrowDown'){
+    e.preventDefault();
+    focusedIdx=Math.min(focusedIdx+1,items.length-1);
+    updateFocus(items);
+  } else if(e.key==='ArrowUp'){
+    e.preventDefault();
+    focusedIdx=Math.max(focusedIdx-1,-1);
+    updateFocus(items);
+  } else if(e.key==='Enter'){
+    e.preventDefault();
+    if(focusedIdx>=0&&items[focusedIdx]) items[focusedIdx].click();
+    else goSearch();
+  } else if(e.key==='Escape'){
+    closeDropdown();
+  }
+}
+
+function updateFocus(items){
+  items.forEach((el,i)=>{
+    el.classList.toggle('focused',i===focusedIdx);
+  });
+}
+
+// close dropdown on outside click
+document.addEventListener('click', e=>{
+  if(!document.querySelector('.search-outer').contains(e.target)) closeDropdown();
+});
+
+applyUI();
 </script>
 </body>
 </html>
