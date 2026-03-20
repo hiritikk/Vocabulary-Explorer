@@ -77,6 +77,19 @@ body {
 }
 .lang-btn.active { background: var(--accent); color: #0a1520; font-weight: 500; }
 
+.tab-desc {
+  padding: 7px 20px 8px;
+  flex-shrink: 0;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 7px;
+}
+.tab-desc-dot {
+  width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+}
+.tab-desc-text {
+  font-size: 12px; color: var(--muted); font-weight: 300;
+}
+
 .graph-wrap { flex: 1; position: relative; overflow: hidden; min-height: 0; }
 canvas { display: block; touch-action: none; }
 
@@ -114,7 +127,8 @@ canvas { display: block; touch-action: none; }
 .divider    { height: 1px; background: var(--border); margin: 0 0 16px; }
 .s-label    { font-size: 10px; font-weight: 500; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; }
 .s-def      { font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 20px; }
-.s-ex       { font-family: 'Lora', serif; font-style: italic; font-size: 15px; color: #b0ada6; line-height: 1.6; margin-bottom: 20px; }
+.s-ex       { font-family: 'Lora', serif; font-style: italic; font-size: 15px; color: #b0ada6; line-height: 1.6; margin-bottom: 8px; }
+.s-ex-note  { font-size: 11px; color: #4a4540; margin-bottom: 20px; }
 
 /* dict results block */
 .dict-block {
@@ -195,7 +209,7 @@ canvas { display: block; touch-action: none; }
     <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
   </button>
   <div>
-    <div class="topbar-sub">Vocabulary Explorer</div>
+    <div class="topbar-sub" id="appSub">Vocabulary Explorer</div>
     <div class="topbar-word" id="topbarWord"></div>
   </div>
 </div>
@@ -203,11 +217,16 @@ canvas { display: block; touch-action: none; }
 <div class="filter-row" id="filterRow"></div>
 
 <div class="lang-row">
-  <span class="lang-label">Language</span>
+  <span class="lang-label" id="langLabel">Language</span>
   <div class="toggle-wrap">
     <button class="lang-btn active" id="btnEng"  onclick="setLang('english')">English</button>
     <button class="lang-btn"        id="btnCree" onclick="setLang('cree')">Cree</button>
   </div>
+</div>
+
+<div class="tab-desc" id="tabDesc">
+  <span class="tab-desc-dot" id="tabDescDot"></span>
+  <span class="tab-desc-text" id="tabDescText"></span>
 </div>
 
 <div class="graph-wrap" id="graphWrap">
@@ -230,10 +249,11 @@ canvas { display: block; touch-action: none; }
     <a class="src-link" id="sSrc" href="#" target="_blank"></a>
   </div>
   <div class="divider"></div>
-  <div class="s-label">Definition</div>
+  <div class="s-label" id="defLabel">Definition</div>
   <div class="s-def" id="sDef"></div>
-  <div class="s-label">Example</div>
+  <div class="s-label" id="exLabel">Example</div>
   <div class="s-ex"  id="sEx"></div>
+  <div class="s-ex-note" id="sExNote" style="display:none">⚠ Approximate — prototype only. Verify with a Cree language expert before use.</div>
   <div id="sDictSection"></div>
 </div>
 
@@ -247,6 +267,12 @@ const FILTERS = [
   { id:'pos',      label:'Parts of speech' },
 ];
 const TAB_COLOR = { category:'#9fc87a', synonyms:'#8bbfa8', antonyms:'#e07a54', pos:'#c8a96e' };
+const TAB_DESC  = {
+  category: 'Words that belong to the same topic or theme',
+  synonyms: 'Words with a similar or equivalent meaning',
+  antonyms: 'Words with the opposite meaning',
+  pos:      'Different grammatical forms of this word',
+};
 const POS_COLORS = {
   'adjective':'#7aa4d4','noun':'#c8a96e','verb':'#e07a54',
   'verb (present participle)':'#e07a54','verb (past tense)':'#e07a54',
@@ -261,6 +287,8 @@ const DB = {
     src:'tahk%C3%A2y%C3%A2w%40vii',
     def:'Moderately cold; pleasantly low in temperature. Also used to describe a calm, composed, or fashionably impressive manner.',
     ex:'The cool breeze off the lake made the summer evening perfect.',
+    cree_def:'tahkâyâw — it is cold. (itwêwina: VII-2v)',
+    cree_ex:'tahkâyâw. — It is cold. [prototype approximation]',
     category:['weather','temperature','personality'],
     synonyms:['cold','chilly','chill','crisp'],
     antonyms:['warm','hot'],
@@ -271,6 +299,8 @@ const DB = {
     src:'pimohc%C3%AAw',
     def:'To move at a regular pace by lifting and setting down each foot in turn.',
     ex:'She decided to walk to work instead of taking the bus.',
+    cree_def:'pimohcêw — s/he walks a bit, s/he walks along, s/he goes along. (itwêwina: VAI-1)',
+    cree_ex:'pimohcêw. — S/he walks along. [prototype approximation]',
     category:['motion','exercise','travel'],
     synonyms:['stroll','stride','amble'],
     antonyms:['run','stop'],
@@ -281,6 +311,8 @@ const DB = {
     src:'maskwa%401',
     def:'A large, heavy mammal with thick fur found across North America, Europe, and Asia.',
     ex:'The bear lumbered through the forest, pausing to sniff the air.',
+    cree_def:'maskwa — bear, black bear. (itwêwina: NA-4w)',
+    cree_ex:'maskwa pimohcêw. — The bear walks about. [prototype approximation]',
     category:['animals','wildlife','land'],
     synonyms:['grizzly','bruin'],
     antonyms:[],
@@ -292,10 +324,16 @@ const SPOKE_WORDS = {
 
   // ── cool / category ──
   weather: {
-    eng:'weather', cree:'kîsikâw', pos:'noun', pronounc:'/ˈwɛðər/',
-    src:'k%C3%AEsik%C3%A2w',
+    eng:'weather', cree:'—', pos:'noun', pronounc:'/ˈwɛðər/',
+    // No single Cree noun for "weather" — expressed through specific verbs (it is cold, it is raining, etc.)
     def:'The state of the atmosphere at a given time and place — temperature, wind, rain, and so on.',
     ex:'The weather this morning was cool and overcast.',
+    dictResults:[
+      { cree:'kisinâw', pos:'VII-1v', src:'kisin%C3%A2w',
+        defs:[{text:'it is cold weather, it is bitterly cold weather',tag:'CW'}]},
+      { cree:'kisâstêw', pos:'VII', src:'kis%C3%A2st%C3%AAw%40vii',
+        defs:[{text:'it is hot, it is warm',tag:'CW'}]},
+    ],
   },
   temperature: {
     eng:'temperature', cree:'—', pos:'noun', pronounc:'/ˈtɛmprɪtʃər/',
@@ -321,15 +359,8 @@ const SPOKE_WORDS = {
     src:'kisin%C3%A2w',
     def:'At a low temperature; lacking warmth. More intense than cool.',
     ex:'The cold water was refreshing after the hike.',
-    dictResults:[
-      { cree:'kinosêw', pos:'INM', src:'kinos%C3%AAw',
-        defs:[{text:'Cold Lake, AB [literally: "fish"]',tag:'CW'}] },
-      { cree:'kisinâw', pos:'VII-1v', src:'kisin%C3%A2w',
-        defs:[
-          {text:'it is cold weather, it is bitterly cold weather',tag:'CW'},
-          {text:'It is quite cold.',tag:'MD'},
-        ]},
-    ],
+    cree_def:'kisinâw — it is cold weather, it is bitterly cold weather. (itwêwina: VII-1v)',
+    cree_ex:'kisinâw. — It is cold. [prototype approximation]',
   },
   chilly: {
     eng:'chilly', cree:'—', pos:'adjective', pronounc:'/ˈtʃɪli/',
@@ -372,12 +403,16 @@ const SPOKE_WORDS = {
     src:'kis%C3%A2st%C3%AAw%40vii',
     def:'Having a moderate degree of heat. The direct opposite of cool in temperature.',
     ex:'The warm afternoon sun made the patio a perfect place to sit.',
+    cree_def:'kisâstêw — it is hot, it is warm. (itwêwina: VII)',
+    cree_ex:'kisâstêw. — It is warm. [prototype approximation]',
   },
   hot: {
     eng:'hot', cree:'kisâstêw', pos:'adjective', pronounc:'/hɒt/',
     src:'kis%C3%A2st%C3%AAw%40vii',
     def:'Having a high degree of heat. Intense opposite of cool.',
     ex:'It was so hot outside that the pavement was shimmering.',
+    cree_def:'kisâstêw — it is hot, it is warm. (itwêwina: VII)',
+    cree_ex:'kisâstêw. — It is hot. [prototype approximation]',
   },
 
   // ── cool / pos ──
@@ -427,6 +462,8 @@ const SPOKE_WORDS = {
     src:'pimaham',
     def:'The act of going from one place to another.',
     ex:'Her travel took her across three provinces on foot.',
+    cree_def:'pimaham — s/he travels down the river, s/he migrates. (itwêwina: VAI-3)',
+    cree_ex:'pimaham askîhk. — S/he travels across the land. [prototype approximation]',
   },
 
   // ── walk / synonyms ──
@@ -513,6 +550,8 @@ const SPOKE_WORDS = {
     src:'pisiskiwak',
     def:'Living organisms that feed on organic matter, typically with specialized sense organs.',
     ex:'The forest was full of animals at dawn.',
+    cree_def:'pisiskiwak — animals (plural of pisiskiw). (itwêwina: NA)',
+    cree_ex:'pisiskiwak pimohcêwak. — The animals walk about. [prototype approximation]',
   },
   wildlife: {
     eng:'wildlife', cree:'—', pos:'noun', pronounc:'/ˈwaɪldlaɪf/',
@@ -528,6 +567,8 @@ const SPOKE_WORDS = {
     src:'askiy',
     def:'The solid surface of the earth. In Cree, askiy carries deep spiritual and cultural meaning.',
     ex:'The bear roamed the land freely, long before settlers arrived.',
+    cree_def:'askiy — earth, land, ground, world. (itwêwina: NI)',
+    cree_ex:'maskwa pimohcêw askîhk. — The bear walks on the land. [prototype approximation]',
   },
 
   // ── bear / synonyms ──
@@ -556,6 +597,8 @@ const SPOKE_WORDS = {
     src:'maskwa%401',
     def:'More than one bear. In Cree, maskwak is the confirmed plural form.',
     ex:'Two bears were spotted near the river this morning.',
+    cree_def:'maskwak — bears (plural of maskwa). (itwêwina: NA-4w)',
+    cree_ex:'maskwak pimohcêwak. — The bears walk about. [prototype approximation]',
   },
   bearing: {
     eng:'bearing', cree:'—', pos:'noun / verb', pronounc:'/ˈbɛrɪŋ/',
@@ -579,7 +622,44 @@ const params  = new URLSearchParams(window.location.search);
 const urlWord = (params.get('word') || 'cool').toLowerCase();
 const hubData = DB[urlWord];
 
-let activeFilter='category', lang='english', curNodes=null, animating=false, raf=null;
+let activeFilter='category';
+let lang = localStorage.getItem('veLang') || 'english';
+let currentSheetWord = null; // track what's open in the sheet
+let curNodes=null, animating=false, raf=null;
+
+// ── static UI strings ──
+const UI_TEXT = {
+  english: {
+    appSub:    'Vocabulary Explorer',
+    tabDesc:   { category:'Words that belong to the same topic or theme', synonyms:'Words with a similar or equivalent meaning', antonyms:'Words with the opposite meaning', pos:'Different grammatical forms of this word' },
+    filters:   { category:'Category', synonyms:'Synonyms', antonyms:'Antonyms', pos:'Parts of speech' },
+    langLabel: 'Language',
+    defLabel:  'Definition',
+    exLabel:   'Example',
+    viewIn:    'View in itwêwina ↗',
+    seeAll:    'See all results on itwêwina ↗',
+    searchOn:  'Search on itwêwina ↗',
+    closest:   'Closest Cree match',
+    gapTitle:  'Semantic gap',
+    gapSub:    'No Cree equivalent has been documented for this concept yet. This may reflect a genuine gap in the dictionary or a concept that exists differently in Cree.',
+  },
+  cree: {
+    appSub:    'nêhiyawêwin itwêwina',
+    // Tab descriptions kept in English — Cree grammar for these
+    // phrases is complex and not verified; keeping English avoids errors
+    tabDesc:   { category:'Words that belong to the same topic or theme', synonyms:'Words with a similar or equivalent meaning', antonyms:'Words with the opposite meaning', pos:'Different grammatical forms of this word' },
+    filters:   { category:'kâ-isi-tipahikâtêk', synonyms:'tâpiskôc', antonyms:'nâspâc', pos:'pîkiskwêwin' },
+    langLabel: 'pîkiskwêwin',
+    defLabel:  'kâ-itwêhk',
+    exLabel:   'mâmitonêyihcikan',
+    viewIn:    'itwêwina ↗',
+    seeAll:    'itwêwina ↗',
+    searchOn:  'mâhkiya itwêwina ↗',
+    closest:   'nêhiyaw-pîkiskwêwin',
+    gapTitle:  'Semantic gap',
+    gapSub:    'namôya ohci kâ-masinipayik ôma pîkiskwêwin.',
+  },
+};
 
 const mCtx=document.createElement('canvas').getContext('2d');
 function measure(text,font){ mCtx.font=font; return mCtx.measureText(text).width; }
@@ -601,23 +681,61 @@ if(!hubData){
   document.getElementById('filterRow').style.display='none';
   document.getElementById('notFound').style.display='block';
 } else {
-  document.getElementById('topbarWord').textContent=hubData.eng;
-  document.title=hubData.eng+' — Vocabulary Explorer';
-  setSheetHeight(); buildFilters(); renderCurrent(false);
+  const hasCree=hubData.cree&&hubData.cree!=='—';
+  document.getElementById('topbarWord').textContent=
+    lang==='cree'&&hasCree ? hubData.cree : hubData.eng;
+  document.title=(lang==='cree'&&hasCree?hubData.cree:hubData.eng)+' — itwêwina';
+  // sync toggle buttons
+  document.getElementById('btnEng').classList.toggle('active',lang==='english');
+  document.getElementById('btnCree').classList.toggle('active',lang==='cree');
+  setSheetHeight();
+  applyStaticUI();
+  renderCurrent(false);
 }
 
 function buildFilters(){
+  const labels=UI_TEXT[lang].filters;
   document.getElementById('filterRow').innerHTML=FILTERS.map(f=>`
     <div class="ftab${f.id===activeFilter?' active':''}"
          style="${f.id===activeFilter?`border-bottom-color:${TAB_COLOR[f.id]};color:var(--text)`:''}"
-         onclick="selectFilter('${f.id}')">${f.label}</div>`).join('');
+         onclick="selectFilter('${f.id}')">${labels[f.id]||f.label}</div>`).join('');
+  updateTabDesc();
+}
+function updateTabDesc(){
+  const col=TAB_COLOR[activeFilter];
+  const desc=UI_TEXT[lang].tabDesc[activeFilter]||'';
+  document.getElementById('tabDescDot').style.background=col;
+  document.getElementById('tabDescText').textContent=desc;
 }
 function selectFilter(fid){ activeFilter=fid; buildFilters(); renderCurrent(true); }
 function setLang(l){
   lang=l;
+  localStorage.setItem('veLang',l);
   document.getElementById('btnEng').classList.toggle('active',l==='english');
   document.getElementById('btnCree').classList.toggle('active',l==='cree');
+  applyStaticUI();
+  if(hubData){
+    const hasCree=hubData.cree&&hubData.cree!=='—';
+    document.getElementById('topbarWord').textContent=
+      l==='cree'&&hasCree ? hubData.cree : hubData.eng;
+  }
   renderCurrent(false);
+  // if sheet is open, re-render it in the new language
+  const sheetOpen=document.getElementById('sheet').classList.contains('open');
+  if(sheetOpen && currentSheetWord) openSheet(currentSheetWord);
+}
+
+function applyStaticUI(){
+  const u=UI_TEXT[lang];
+  const subEl=document.getElementById('appSub');
+  if(subEl) subEl.textContent=u.appSub;
+  const llEl=document.getElementById('langLabel');
+  if(llEl) llEl.textContent=u.langLabel;
+  const dlEl=document.getElementById('defLabel');
+  if(dlEl) dlEl.textContent=u.defLabel;
+  const elEl=document.getElementById('exLabel');
+  if(elEl) elEl.textContent=u.exLabel;
+  buildFilters();
 }
 
 function getSpokeIds(){
@@ -667,17 +785,26 @@ function drawScene(nodes,alpha){
     ctx.fillStyle='#18181a'; ctx.fill();
     ctx.strokeStyle=(hasVerified?col:'#444240')+'90'; ctx.lineWidth=0.9; ctx.stroke();
 
-    const prim=primary(sp), trans=translation(sp);
-    const primItalic=lang==='cree'&&hasVerified;
-
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    ctx.fillStyle=hasVerified?'#f0ede6':'#9a9890';
-    ctx.font=`${primItalic?'italic ':''}500 ${spPrimSz}px '${primItalic?'Lora':'DM Sans'}',sans-serif`;
-    ctx.fillText(clip(ctx,prim,sp.r*1.75),sp.x,sp.y-sp.r*.2);
 
-    ctx.font=`italic 300 ${spSubSz}px 'Lora',serif`;
-    ctx.fillStyle=trans==='—'?'#3a3835':'#7a7870';
-    ctx.fillText(clip(ctx,trans,sp.r*1.75),sp.x,sp.y+sp.r*.3);
+    if(lang==='cree' && !hasVerified){
+      // semantic gap — draw a small amber dot + muted "?" instead of repeating English
+      const dotR = Math.round(sp.r * 0.12);
+      ctx.beginPath(); ctx.arc(sp.x, sp.y - sp.r*0.18, dotR, 0, Math.PI*2);
+      ctx.fillStyle='#BA7517'; ctx.fill();
+      ctx.font=`300 ${spSubSz}px 'DM Sans',sans-serif`;
+      ctx.fillStyle='#4a4540';
+      ctx.fillText('semantic gap', sp.x, sp.y + sp.r*0.28);
+    } else {
+      const prim=primary(sp), trans=translation(sp);
+      const primItalic=lang==='cree'&&hasVerified;
+      ctx.fillStyle=hasVerified?'#f0ede6':'#9a9890';
+      ctx.font=`${primItalic?'italic ':''}500 ${spPrimSz}px '${primItalic?'Lora':'DM Sans'}',sans-serif`;
+      ctx.fillText(clip(ctx,prim,sp.r*1.75),sp.x,sp.y-sp.r*.2);
+      ctx.font=`italic 300 ${spSubSz}px 'Lora',serif`;
+      ctx.fillStyle='#7a7870';
+      ctx.fillText(clip(ctx,trans,sp.r*1.75),sp.x,sp.y+sp.r*.3);
+    }
   });
 
   // hub
@@ -771,47 +898,56 @@ cv.addEventListener('click',e=>{
 
 // ── sheet ──
 function openSheet(w){
+  currentSheetWord = w; // remember for lang toggle re-render
   const posCol=POS_COLORS[w.pos]||'#888';
   const hasDirect=w.cree&&w.cree!=='—';
+  const showCree=lang==='cree';
 
+  // word + translation
   document.getElementById('sWord').textContent=primary(w);
   document.getElementById('sTrans').textContent=hasDirect?translation(w):'';
-  document.getElementById('sPronounc').textContent=w.pronounc;
 
+  // pos + pronunciation
+  document.getElementById('sPronounc').textContent=w.pronounc;
   const posEl=document.getElementById('sPos');
   posEl.textContent=w.pos;
   posEl.style.cssText=`background:${posCol}20;color:${posCol};border:1px solid ${posCol}35`;
 
+  // source link
+  const u=UI_TEXT[lang];
   const srcEl=document.getElementById('sSrc');
-  if(w.src){ srcEl.href=ITWEWINA+'/word/'+w.src+'/'; srcEl.textContent='View in itwêwina ↗'; srcEl.style.display=''; }
+  if(w.src){ srcEl.href=ITWEWINA+'/word/'+w.src+'/'; srcEl.textContent=u.viewIn; srcEl.style.display=''; }
   else srcEl.style.display='none';
 
-  document.getElementById('sDef').textContent=w.def;
-  document.getElementById('sEx').textContent=w.ex;
+  // definition + example — use Cree versions if in Cree mode and they exist
+  const def = showCree && hasDirect && w.cree_def ? w.cree_def : w.def;
+  const rawEx = showCree && hasDirect && w.cree_ex ? w.cree_ex : w.ex;
+  const isApprox = rawEx.includes('[prototype approximation]');
+  const cleanEx  = rawEx.replace(' [prototype approximation]','');
+  document.getElementById('sDef').textContent=def;
+  document.getElementById('sEx').textContent=cleanEx;
+  const noteEl=document.getElementById('sExNote');
+  if(noteEl) noteEl.style.display = isApprox ? '' : 'none';
 
-  // dict results / semantic gap section
+  // dict results / semantic gap — only shown when no direct Cree word
   const dictSec=document.getElementById('sDictSection');
   if(!hasDirect){
     const results=w.dictResults||[];
     const first=results[0]||null;
     let html='';
-
     if(!first){
-      // true semantic gap — no Cree equivalent exists
       html+=`<div class="gap-badge">
         <span class="gap-dot"></span>
-        <span class="gap-text">Semantic gap</span>
+        <span class="gap-text">${u.gapTitle}</span>
       </div>
-      <p class="gap-sub">No Cree equivalent has been documented for this concept yet.
-        This may reflect a genuine gap in the dictionary or a concept that exists differently in Cree.
+      <p class="gap-sub">${u.gapSub}
         <a class="dict-search-link" href="${ITWEWINA}/search?q=${encodeURIComponent(w.eng)}" target="_blank">
-          Search on itwêwina ↗
+          ${u.searchOn}
         </a>
       </p>`;
     } else {
-      // show closest single result
-      html+=`<div class="s-label">Closest Cree match</div>`;
-      html+=`<div class="dict-block">
+      html+=`<div class="s-label">${u.closest}</div>
+      <div class="dict-block">
         <div class="dict-header">
           <a class="dict-cree" href="${ITWEWINA}/word/${first.src}/" target="_blank">${first.cree}</a>
           <span class="dict-pos">${first.pos}</span>
@@ -825,10 +961,9 @@ function openSheet(w){
       });
       html+=`</div></div>
       <a class="dict-search-link" href="${ITWEWINA}/search?q=${encodeURIComponent(w.eng)}" target="_blank">
-        See all results on itwêwina ↗
+        ${u.seeAll}
       </a>`;
     }
-
     dictSec.innerHTML=html;
     dictSec.style.display='';
   } else {
@@ -838,7 +973,10 @@ function openSheet(w){
 
   document.getElementById('sheet').classList.add('open');
 }
-function closeSheet(){ document.getElementById('sheet').classList.remove('open'); }
+function closeSheet(){
+  document.getElementById('sheet').classList.remove('open');
+  currentSheetWord = null;
+}
 
 let shty=0;
 const sh=document.getElementById('sheet');
