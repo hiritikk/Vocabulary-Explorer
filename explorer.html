@@ -193,13 +193,43 @@ canvas { display: block; touch-action: none; }
 }
 .dict-search-link:hover { opacity: 1; }
 
+.sheet-top {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 18px;
+}
+.sheet-handle-inline {
+  width: 36px; height: 4px;
+  background: rgba(255,255,255,.1);
+  border-radius: 2px; margin-top: 12px;
+}
 .close-btn {
-  position: absolute; top: 16px; right: 20px;
   width: 28px; height: 28px; border-radius: 50%;
   background: rgba(255,255,255,.07); border: none;
   cursor: pointer; color: var(--muted); font-size: 14px;
   display: flex; align-items: center; justify-content: center;
+  transition: background .15s; margin-top: 10px; flex-shrink: 0;
 }
+.close-btn:active { background: rgba(255,255,255,.12); }
+
+.word-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 4px;
+}
+.word-row .word-main { margin-bottom: 0; flex: 1; min-width: 0; }
+
+.icon-btn {
+  flex-shrink: 0;
+  width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,.04);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background .15s; text-decoration: none;
+}
+.icon-btn:active { background: rgba(255,255,255,.1); }
+.icon-btn svg { width: 15px; height: 15px; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.icon-btn.speaker svg { stroke: var(--accent); }
+.icon-btn.link svg { stroke: var(--muted); }
+.icon-btn.link:hover svg { stroke: var(--accent); }
 </style>
 </head>
 <body>
@@ -239,14 +269,32 @@ canvas { display: block; touch-action: none; }
 </div>
 
 <div class="sheet" id="sheet">
-  <button class="close-btn" onclick="closeSheet()">✕</button>
-  <div class="handle"></div>
-  <div class="word-main"  id="sWord"></div>
+  <div class="sheet-top">
+    <div class="sheet-handle-inline"></div>
+    <button class="close-btn" onclick="closeSheet()" title="Close">
+      <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="word-row">
+    <div class="word-main" id="sWord"></div>
+    <button class="icon-btn speaker" title="Listen to pronunciation" onclick="speakerTap(this)">
+      <svg viewBox="0 0 24 24">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+      </svg>
+    </button>
+    <a class="icon-btn link" id="sSrc" href="#" target="_blank" title="View in itwêwina" style="display:none">
+      <svg viewBox="0 0 24 24">
+        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+      </svg>
+    </a>
+  </div>
   <div class="word-trans" id="sTrans"></div>
   <div class="meta-row">
     <span class="pos-badge" id="sPos"></span>
     <span class="pronounc"  id="sPronounc"></span>
-    <a class="src-link" id="sSrc" href="#" target="_blank"></a>
   </div>
   <div class="divider"></div>
   <div class="s-label" id="defLabel">Definition</div>
@@ -916,7 +964,7 @@ function openSheet(w){
   // source link
   const u=UI_TEXT[lang];
   const srcEl=document.getElementById('sSrc');
-  if(w.src){ srcEl.href=ITWEWINA+'/word/'+w.src+'/'; srcEl.textContent=u.viewIn; srcEl.style.display=''; }
+  if(w.src){ srcEl.href=ITWEWINA+'/word/'+w.src+'/'; srcEl.style.display='flex'; srcEl.title='View in itwêwina'; }
   else srcEl.style.display='none';
 
   // definition + example — use Cree versions if in Cree mode and they exist
@@ -973,6 +1021,12 @@ function openSheet(w){
 
   document.getElementById('sheet').classList.add('open');
 }
+function speakerTap(btn){
+  btn.style.background='rgba(122,164,212,0.2)';
+  btn.style.transform='scale(0.92)';
+  setTimeout(()=>{ btn.style.background=''; btn.style.transform=''; }, 280);
+}
+
 function closeSheet(){
   document.getElementById('sheet').classList.remove('open');
   currentSheetWord = null;
