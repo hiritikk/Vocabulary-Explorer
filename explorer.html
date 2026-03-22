@@ -442,72 +442,80 @@ function openSheet(w){
   const hasDirect = w.cree && w.cree !== null;
   const showCree  = lang === 'cree';
 
+  // ── word + translation ──
   document.getElementById('sWord').textContent  = primary(w);
   document.getElementById('sTrans').textContent = hasDirect ? translation(w) : '';
 
-  // pronunciation (hub word has it, spokes may not)
+  // ── pronunciation ──
   document.getElementById('sPronounc').textContent = w.pronounc || '';
 
-  // POS badge — use POS_COLORS from dict.js
+  // ── POS badge ──
   const posCol = POS_COLORS[w.pos] || POS_COLORS[w.posLabel] || '#888';
   const posEl  = document.getElementById('sPos');
   posEl.textContent = w.posLabel || w.pos || '';
   posEl.style.cssText = `background:${posCol}20;color:${posCol};border:1px solid ${posCol}35`;
 
-  // itwewina source link
+  // ── itwewina link ──
   const srcEl = document.getElementById('sSrc');
   if(w.src){ srcEl.href=ITWEWINA+'/word/'+w.src+'/'; srcEl.style.display='flex'; }
   else srcEl.style.display='none';
 
-  // definition — from defs array or English def
+  // ── definition ──
+  // Always show English definition for general users.
+  // In Cree mode AND word has a direct Cree entry, prepend the itwewina definition too.
   let defText = '';
+  const engDef = w.defs ? w.defs.map(d=>d.text).join('; ') : (w.def || '');
   if(showCree && hasDirect && w.defs && w.defs.length){
-    defText = w.defs.map((d,i)=>`${i+1}. ${d.text} [${d.source}]`).join('\n');
+    // show itwewina definition (e.g. "it is cold — CW") then the English meaning
+    defText = w.defs.map(d=>`${d.text}${d.source?' ['+d.source+']':''}`).join('\n') + '\n\n' + engDef;
   } else {
-    defText = w.defs ? w.defs.map(d=>d.text).join('; ') : '';
-    if(!defText) defText = w.def || '';
+    defText = engDef;
   }
   document.getElementById('sDef').textContent = defText;
 
-  // example
-  const rawEx = showCree && hasDirect && w.exApprox ? w.exApprox : (w.exEng || w.ex || '');
-  const isApprox = rawEx && w.approx && showCree;
-  document.getElementById('sEx').textContent = rawEx.replace(' [prototype approximation]','');
+  // ── example ──
+  // In Cree mode show the Cree approximate sentence if available.
+  // Always fall back to English example so the field is never empty.
+  const creEx = w.exApprox ? w.exApprox.replace(' [prototype approximation]','') : '';
+  const engEx = w.exEng || w.ex || '';
+  const rawEx = showCree && hasDirect && creEx ? creEx : engEx;
+  document.getElementById('sEx').textContent = rawEx;
   const noteEl = document.getElementById('sExNote');
-  if(noteEl) noteEl.style.display = isApprox ? '' : 'none';
+  if(noteEl) noteEl.style.display = (showCree && hasDirect && creEx) ? '' : 'none';
 
-  // "More about this word" → word.html (only for hub words that have full entries)
+  // ── "More about this word" — shown for any word that has a full entry ──
   const detailLink = document.getElementById('sDetailLink');
   if(detailLink){
-    const isFullEntry = !!(w.forms || w.grammarNote);
+    const isFullEntry = !!(w.forms || w.grammarNote || w.syllabics);
     detailLink.textContent = u.moreAbout;
     detailLink.href = `word.html?word=${w.key}`;
     detailLink.style.display = isFullEntry ? '' : 'none';
   }
 
-  // dict results / semantic gap (for words with cree: null)
+  // ── dict results / semantic gap ──
+  // Only shown when word has no direct Cree equivalent (cree: null)
   const dictSec = document.getElementById('sDictSection');
   if(!hasDirect){
     const results = w.dictResults || [];
-    const first = results[0] || null;
+    const first   = results[0] || null;
     let html = '';
     if(!first){
       html = `<div class="gap-badge"><span class="gap-dot"></span><span class="gap-text">${u.gapTitle}</span></div>
-      <p class="gap-sub">${u.gapSub}
-        <a class="dict-search-link" href="${ITWEWINA}/search?q=${encodeURIComponent(w.eng)}" target="_blank">${u.searchOn}</a>
-      </p>`;
+        <p class="gap-sub">${u.gapSub}
+          <a class="dict-search-link" href="${ITWEWINA}/search?q=${encodeURIComponent(w.eng)}" target="_blank">${u.searchOn}</a>
+        </p>`;
     } else {
       html = `<div class="s-label">${u.closest}</div>
-      <div class="dict-block">
-        <div class="dict-header">
-          <a class="dict-cree" href="${ITWEWINA}/word/${first.src||''}/" target="_blank">${first.cree}</a>
-          <span class="dict-pos">${first.pos}</span>
+        <div class="dict-block">
+          <div class="dict-header">
+            <a class="dict-cree" href="${ITWEWINA}/word/${first.src||''}/" target="_blank">${first.cree}</a>
+            <span class="dict-pos">${first.pos}</span>
+          </div>
+          <div class="dict-defs">
+            ${first.defs.map((d,i)=>`<div class="dict-def-item"><span class="dict-num">${i+1}.</span><span>${d.text}<span class="dict-src-tag">${d.tag}</span></span></div>`).join('')}
+          </div>
         </div>
-        <div class="dict-defs">
-          ${first.defs.map((d,i)=>`<div class="dict-def-item"><span class="dict-num">${i+1}.</span><span>${d.text}<span class="dict-src-tag">${d.tag}</span></span></div>`).join('')}
-        </div>
-      </div>
-      <a class="dict-search-link" href="${ITWEWINA}/search?q=${encodeURIComponent(w.eng)}" target="_blank">${u.seeAll}</a>`;
+        <a class="dict-search-link" href="${ITWEWINA}/search?q=${encodeURIComponent(w.eng)}" target="_blank">${u.seeAll}</a>`;
     }
     dictSec.innerHTML = html; dictSec.style.display = '';
   } else {
