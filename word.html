@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Word Detail</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<!-- ── single source of truth ── -->
+<script src="dict.js"></script>
+<style>
+:root{--bg:#0e0e0f;--surface:#18181a;--surface2:#222224;--border:rgba(255,255,255,0.08);--text:#f0ede6;--muted:#7a7870;--accent:#7aa4d4;--amber:#BA7517;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{background:var(--bg);}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max-width:430px;margin:0 auto;min-height:100dvh;padding-bottom:60px;}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(14,14,15,0.95);backdrop-filter:blur(8px);
+  display:flex;align-items:center;gap:12px;padding:14px 20px 12px;border-bottom:1px solid var(--border);}
+.back-btn{width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.back-btn svg{width:14px;height:14px;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;}
+.topbar-label{font-size:13px;color:var(--muted);flex:1;}
+.script-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:3px;}
+.script-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px;gap:2px;}
+.sc-btn{padding:4px 10px;border-radius:99px;border:none;background:transparent;font-size:11px;
+  font-family:'DM Sans',sans-serif;color:var(--muted);cursor:pointer;transition:all .15s;}
+.sc-btn.active{background:var(--accent);color:#0a1520;font-weight:500;}
+.script-hint{font-size:10px;color:#3a3835;text-align:right;max-width:120px;line-height:1.3;}
+.hero{padding:28px 24px 24px;background:var(--surface);margin-bottom:8px;}
+.hero-eng{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
+.hero-cree{font-family:'Lora',serif;font-size:38px;font-weight:600;color:var(--text);line-height:1.1;margin-bottom:4px;}
+.hero-syl{font-size:24px;color:var(--accent);margin-bottom:12px;font-weight:300;letter-spacing:.04em;display:none;}
+.hero-syl.show{display:block;}
+.pronounc-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.pronounc{font-size:14px;color:var(--muted);flex:1;}
+.icon-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;text-decoration:none;flex-shrink:0;}
+.icon-btn:active{background:rgba(255,255,255,.1);}
+.icon-btn svg{width:14px;height:14px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.icon-btn.speaker svg{stroke:var(--accent);}
+.icon-btn.link svg{stroke:var(--muted);}
+.pos-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.pos-badge{font-size:11px;font-weight:500;padding:4px 12px;border-radius:99px;letter-spacing:.04em;text-transform:uppercase;}
+.pos-note{font-size:12px;padding:4px 10px;border-radius:8px;display:flex;align-items:center;gap:5px;}
+.pos-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.card{background:var(--surface);margin:0 0 8px;padding:20px 24px;}
+.card-title{font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;
+  margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title-line{flex:1;height:1px;background:var(--border);}
+.def-text{font-size:16px;color:var(--text);line-height:1.7;}
+.def-source{font-size:11px;color:#4a4540;margin-top:4px;}
+.ex-divider{height:1px;background:var(--border);margin:14px 0;}
+.ex-label{font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
+.ex-text{font-family:'Lora',serif;font-style:italic;font-size:15px;color:#b0ada6;line-height:1.65;}
+.ex-note{font-size:11px;color:#3a3835;margin-top:6px;}
+.grammar-body{font-size:14px;color:var(--muted);line-height:1.7;}
+.grammar-body strong{color:var(--text);font-weight:500;}
+.grammar-highlight{margin-top:14px;padding:12px 14px;background:var(--surface2);border-radius:10px;
+  border-left:3px solid var(--amber);font-size:13px;color:var(--text);line-height:1.6;}
+.syl-big{font-size:36px;color:var(--text);letter-spacing:.06em;margin-bottom:16px;line-height:1.2;}
+.syl-breakdown{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.syl-piece{display:flex;flex-direction:column;align-items:center;background:var(--surface2);
+  border-radius:8px;padding:10px 14px;min-width:48px;border:1px solid var(--border);}
+.syl-char{font-size:22px;color:var(--accent);line-height:1;margin-bottom:5px;}
+.syl-roman{font-size:11px;color:var(--muted);}
+.syl-note{font-size:13px;color:var(--muted);line-height:1.6;}
+.sro-note{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:14px;}
+.rel-row{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;
+  cursor:pointer;transition:background .15s;text-decoration:none;margin-bottom:2px;}
+.rel-row:active{background:var(--surface2);}
+.rel-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.rel-left{flex:1;min-width:0;}
+.rel-cree{font-family:'Lora',serif;font-size:15px;color:var(--text);}
+.rel-eng{font-size:12px;color:var(--muted);margin-top:1px;}
+.rel-type{font-size:11px;color:var(--muted);flex-shrink:0;}
+.rel-arr{font-size:14px;color:rgba(255,255,255,.15);flex-shrink:0;}
+.forms-group{margin-bottom:20px;}
+.forms-group:last-child{margin-bottom:0;}
+.forms-group-label{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.form-row{display:flex;align-items:baseline;gap:12px;padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;}
+.form-row:last-child{border-bottom:none;}
+.form-person{color:var(--muted);min-width:100px;flex-shrink:0;font-size:12px;}
+.form-word{font-family:'Lora',serif;color:var(--text);font-size:15px;}
+.forms-note{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:16px;
+  padding:10px 12px;background:var(--surface2);border-radius:8px;}
+.source-card{margin:0 0 8px;padding:16px 24px;background:var(--surface);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.source-text{font-size:12px;color:var(--muted);line-height:1.6;}
+.source-text strong{color:#5a5850;font-weight:500;}
+.itwewina-link{font-size:12px;color:var(--accent);text-decoration:none;opacity:.7;flex-shrink:0;}
+.itwewina-link:hover{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <button class="back-btn" onclick="history.back()">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </button>
+  <span class="topbar-label" id="topbarLabel">Word detail</span>
+  <div class="script-wrap">
+    <div class="script-toggle">
+      <button class="sc-btn active" id="btnSRO" onclick="setScript('sro')">SRO</button>
+      <button class="sc-btn" id="btnSyl" onclick="setScript('syllabics')">ᓀᐦᐃᔭᐍᐏᐣ</button>
+    </div>
+    <div class="script-hint">Switch writing system</div>
+  </div>
+</div>
+
+<!-- hero -->
+<div class="hero">
+  <div class="hero-eng"  id="heroEng"></div>
+  <div class="hero-cree" id="heroCree"></div>
+  <div class="hero-syl"  id="heroSyl"></div>
+  <div class="pronounc-row">
+    <span class="pronounc" id="heroPronounc"></span>
+    <button class="icon-btn speaker" onclick="speakerTap(this)" title="Listen to pronunciation">
+      <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" stroke="currentColor"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07" stroke="currentColor"/></svg>
+    </button>
+    <a class="icon-btn link" id="heroLink" href="#" target="_blank" title="View in itwêwina">
+      <svg viewBox="0 0 24 24" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+    </a>
+  </div>
+  <div class="pos-row">
+    <span class="pos-badge" id="posBadge"></span>
+    <span class="pos-note"  id="posNote"><span class="pos-dot" id="posDot"></span><span id="posNoteText"></span></span>
+  </div>
+</div>
+
+<!-- definition -->
+<div class="card">
+  <div class="card-title">Definition <span class="card-title-line"></span></div>
+  <div class="def-text"   id="defText"></div>
+  <div class="def-source" id="defSource"></div>
+  <div class="ex-divider"></div>
+  <div class="ex-label">Example</div>
+  <div class="ex-text" id="exText"></div>
+  <div class="ex-note" id="exNote" style="display:none">⚠ Approximate — prototype only. Verify with a Cree language expert.</div>
+</div>
+
+<!-- grammar -->
+<div class="card">
+  <div class="card-title">Grammar note <span class="card-title-line"></span></div>
+  <div class="grammar-body"      id="grammarBody"></div>
+  <div class="grammar-highlight" id="grammarHighlight"></div>
+</div>
+
+<!-- writing systems -->
+<div class="card">
+  <div class="card-title">Writing systems <span class="card-title-line"></span></div>
+  <div class="sro-note" id="sroNote"></div>
+  <div style="height:1px;background:var(--border);margin:16px 0"></div>
+  <div class="card-title" style="margin-bottom:12px">Syllabics <span class="card-title-line"></span></div>
+  <div class="syl-big"       id="sylBig"></div>
+  <div class="syl-breakdown" id="sylBreak"></div>
+  <div class="syl-note"      id="sylNote"></div>
+</div>
+
+<!-- related words -->
+<div class="card">
+  <div class="card-title">Related words <span class="card-title-line"></span></div>
+  <div id="relatedList"></div>
+</div>
+
+<!-- word forms -->
+<div class="card">
+  <div class="card-title">Word forms <span class="card-title-line"></span></div>
+  <div class="forms-note">In Cree, a single verb changes form depending on who is doing the action. All forms below are confirmed from itwêwina (Wolvengrey, 2001).</div>
+  <div id="formsList"></div>
+</div>
+
+<!-- source -->
+<div class="source-card">
+  <div class="source-text" id="sourceText"></div>
+  <a class="itwewina-link" id="sourceLink" href="#" target="_blank">itwêwina ↗</a>
+</div>
+
+<script>
+/**
+ * word.html
+ *
+ * How it works:
+ * 1. dict.js is loaded first — provides DICT, getWord(), ITWEWINA, POS_COLORS
+ * 2. URL param ?word=walk determines which word to show
+ * 3. getWord(key) returns the full word object from DICT
+ * 4. All sections (definition, grammar, syllabics, forms, related) are built from that object
+ * 5. SRO/Syllabics toggle switches the script display
+ * 6. Related words link back to word.html?word=<key>
+ */
+
+const params = new URLSearchParams(window.location.search);
+const key    = (params.get('word') || 'walk').toLowerCase();
+const w      = getWord(key); // from dict.js
+let script   = 'sro';
+
+if (!w) {
+  document.body.innerHTML = `<div style="padding:40px 24px;text-align:center">
+    <h2 style="font-family:'Lora',serif;color:var(--text);margin-bottom:12px">Word not found</h2>
+    <p style="color:var(--muted);margin-bottom:20px">No entry for "${key}" in the dictionary.</p>
+    <a href="index.html" style="color:var(--accent)">← Search again</a>
+  </div>`;
+} else {
+  // populate topbar
+  document.getElementById('topbarLabel').textContent = w.eng;
+  document.title = w.eng + ' — Vocabulary Explorer';
+
+  // hero
+  document.getElementById('heroEng').textContent  = w.eng.toUpperCase();
+  document.getElementById('heroCree').textContent = w.cree || '—';
+  document.getElementById('heroSyl').textContent  = w.syllabics || '';
+  document.getElementById('heroPronounc').textContent = w.pronounc || '';
+  document.getElementById('heroLink').href = w.src ? `${ITWEWINA}/word/${w.src}/` : ITWEWINA;
+  if (!w.src) document.getElementById('heroLink').style.display = 'none';
+
+  // POS badge — reads POS_COLORS from dict.js
+  const posCol = POS_COLORS[w.pos] || '#888';
+  const pb = document.getElementById('posBadge');
+  pb.textContent = `${w.posLabel || w.pos}`;
+  pb.style.cssText = `background:${posCol}22;color:${posCol};border:1px solid ${posCol}35`;
+
+  // POS note (verb vs adjective warning)
+  const dotColor = w.posWarning ? '#e07a54' : '#9fc87a';
+  const bgColor  = w.posWarning ? 'rgba(224,122,84,0.1)' : 'rgba(99,153,34,0.1)';
+  const bdColor  = w.posWarning ? 'rgba(224,122,84,0.2)' : 'rgba(99,153,34,0.2)';
+  document.getElementById('posDot').style.background = dotColor;
+  const pn = document.getElementById('posNote');
+  pn.style.cssText = `color:${dotColor};background:${bgColor};border:1px solid ${bdColor}`;
+  document.getElementById('posNoteText').textContent = w.posNote || '';
+  if (!w.posNote) pn.style.display = 'none';
+
+  // definitions — from defs array in DICT
+  if (w.defs && w.defs.length) {
+    document.getElementById('defText').textContent    = w.defs.map(d => d.text).join('; ');
+    document.getElementById('defSource').textContent  = 'Source: ' + [...new Set(w.defs.map(d=>d.source))].join(', ');
+  } else {
+    document.getElementById('defText').textContent = '';
+    document.getElementById('defSource').textContent = '';
+  }
+
+  // example sentence
+  const rawEx = w.exApprox || w.exEng || w.ex || '';
+  document.getElementById('exText').textContent = rawEx.replace(' [prototype approximation]','');
+  if(document.getElementById('exNote'))
+    document.getElementById('exNote').style.display = w.approx ? '' : 'none';
+
+  // grammar
+  if (w.grammarNote) document.getElementById('grammarBody').innerHTML = w.grammarNote;
+  if (w.grammarHighlight) document.getElementById('grammarHighlight').innerHTML = w.grammarHighlight;
+
+  // writing systems
+  if (w.sroNote) document.getElementById('sroNote').textContent = w.sroNote;
+  if (w.syllabics) document.getElementById('sylBig').textContent = w.syllabics;
+  if (w.sylNote)   document.getElementById('sylNote').textContent = w.sylNote;
+  if (w.sylBreak) {
+    document.getElementById('sylBreak').innerHTML = w.sylBreak.map(([c,r])=>`
+      <div class="syl-piece"><span class="syl-char">${c}</span><span class="syl-roman">${r}</span></div>`).join('');
+  }
+
+  // related words — pulls from DICT to get full word data
+  const relatedWords = [
+    ...(w.synonyms||[]).map(k=>({ ...getWord(k), relType:'synonym', col:'#8bbfa8' })),
+    ...(w.antonyms||[]).map(k=>({ ...getWord(k), relType:'antonym', col:'#e07a54' })),
+    ...(w.category||[]).map(k=>({ ...getWord(k), relType:'category', col:'#9fc87a' })),
+    ...(w.pos_forms||[]).map(k=>({ ...getWord(k), relType:'word form', col:'#c8a96e' })),
+  ].filter(r => r && r.eng);
+
+  document.getElementById('relatedList').innerHTML = relatedWords.slice(0,6).map(r=>`
+    <a class="rel-row" href="word.html?word=${r.key}">
+      <span class="rel-dot" style="background:${r.col}"></span>
+      <div class="rel-left">
+        <div class="rel-cree">${r.cree || '—'}</div>
+        <div class="rel-eng">${r.eng}</div>
+      </div>
+      <span class="rel-type">${r.relType}</span>
+      <span class="rel-arr">›</span>
+    </a>`).join('');
+
+  // word forms — from forms array in DICT
+  if (w.forms && w.forms.length) {
+    document.getElementById('formsList').innerHTML = w.forms.map(g=>`
+      <div class="forms-group">
+        <div class="forms-group-label">${g.group}</div>
+        ${g.rows.map(([p,fw])=>`<div class="form-row"><span class="form-person">${p}</span><span class="form-word">${fw}</span></div>`).join('')}
+      </div>`).join('');
+  } else {
+    document.querySelector('.card:has(#formsList)').style.display='none';
+  }
+
+  // source
+  if (w.sourceFull) {
+    document.getElementById('sourceText').innerHTML = `Source: <strong>${w.sourceFull}</strong>. <strong>${w.sourceTag||''}</strong>`;
+  }
+  if (w.src) document.getElementById('sourceLink').href = `${ITWEWINA}/word/${w.src}/`;
+}
+
+// ── script toggle ──
+function setScript(s){
+  script = s;
+  document.getElementById('btnSRO').classList.toggle('active', s==='sro');
+  document.getElementById('btnSyl').classList.toggle('active', s==='syllabics');
+  const sylEl = document.getElementById('heroSyl');
+  const creEl = document.getElementById('heroCree');
+  if(sylEl) sylEl.classList.toggle('show', s==='syllabics');
+  if(creEl) creEl.style.display = s==='syllabics' ? 'none' : '';
+}
+
+function speakerTap(btn){
+  btn.style.background='rgba(122,164,212,0.2)'; btn.style.transform='scale(0.9)';
+  setTimeout(()=>{btn.style.background='';btn.style.transform='';},280);
+}
+</script>
+</body>
+</html>
