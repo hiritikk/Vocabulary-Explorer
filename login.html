@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Sign in — Vocabulary Explorer</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="js/auth.js"></script>
+<style>
+:root {
+  --bg:#0e0e0f; --surface:#18181a; --surface2:#222224;
+  --border:rgba(255,255,255,0.07); --border-focus:rgba(122,164,212,0.4);
+  --text:#f0ede6; --muted:#7a7870; --accent:#7aa4d4; --error:#e07a54;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  max-width:430px;margin:0 auto;padding:0 28px;min-height:100dvh;}
+
+/* logo */
+.logo-wrap{text-align:center;margin-bottom:40px;}
+.logo-sub{font-size:11px;font-weight:300;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
+.logo-title{font-family:'Lora',serif;font-size:clamp(26px,7vw,32px);font-weight:600;color:var(--text);line-height:1.2;}
+.logo-title span{color:var(--accent);}
+
+/* card */
+.card{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 24px;}
+.card-title{font-size:18px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.card-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
+
+/* form */
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:6px;text-transform:uppercase;}
+.field input{
+  width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--border);
+  background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);
+  outline:none;transition:border-color .2s;-webkit-appearance:none;
+}
+.field input::placeholder{color:var(--muted);}
+.field input:focus{border-color:var(--border-focus);}
+
+/* error */
+.err-msg{
+  font-size:13px;color:var(--error);background:rgba(224,122,84,0.08);
+  border:1px solid rgba(224,122,84,0.2);border-radius:10px;
+  padding:10px 14px;margin-bottom:16px;display:none;
+}
+.err-msg.show{display:block;}
+
+/* success toast */
+.toast{
+  position:fixed;bottom:36px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--surface2);border:1px solid rgba(122,164,212,0.3);
+  border-radius:12px;padding:12px 20px;font-size:14px;color:var(--accent);
+  white-space:nowrap;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:99;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* primary button */
+.btn-primary{
+  width:100%;padding:14px;border-radius:12px;border:none;
+  background:var(--accent);color:#0a1520;font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:500;cursor:pointer;transition:opacity .15s;
+}
+.btn-primary:active{opacity:.8;}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
+
+/* links row */
+.links-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
+.text-link{font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;
+  font-family:'DM Sans',sans-serif;padding:0;text-decoration:none;}
+.text-link:hover{text-decoration:underline;}
+.links-center{width:100%;text-align:center;margin-top:20px;}
+
+/* view switching */
+.view{display:none;}
+.view.active{display:block;}
+</style>
+</head>
+<body>
+
+<div class="logo-wrap">
+  <div class="logo-sub">nêhiyawêwin</div>
+  <div class="logo-title">Vocabulary <span>Explorer</span></div>
+</div>
+
+<!-- LOGIN VIEW -->
+<div class="view active" id="viewLogin">
+  <div class="card">
+    <div class="card-title">Welcome back</div>
+    <div class="card-sub">Sign in to your University of Alberta account</div>
+    <div class="err-msg" id="loginErr"></div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="loginEmail" placeholder="you@ualberta.ca" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Sign in</button>
+    <div class="links-row">
+      <button class="text-link" onclick="showView('viewForgot')">Forgot password?</button>
+      <button class="text-link" onclick="showView('viewRegister')">Create account</button>
+    </div>
+  </div>
+</div>
+
+<!-- REGISTER VIEW -->
+<div class="view" id="viewRegister">
+  <div class="card">
+    <div class="card-title">Create account</div>
+    <div class="card-sub">Use your @ualberta.ca email address</div>
+    <div class="err-msg" id="regErr"></div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="regEmail" placeholder="you@ualberta.ca" autocomplete="email">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="regPass" placeholder="Choose a password" autocomplete="new-password">
+    </div>
+    <div class="field">
+      <label>Confirm password</label>
+      <input type="password" id="regConfirm" placeholder="Repeat password" autocomplete="new-password" onkeydown="if(event.key==='Enter')doRegister()">
+    </div>
+    <button class="btn-primary" onclick="doRegister()">Create account</button>
+    <div class="links-center">
+      <button class="text-link" onclick="showView('viewLogin')">Already have an account? Sign in</button>
+    </div>
+  </div>
+</div>
+
+<!-- FORGOT PASSWORD VIEW -->
+<div class="view" id="viewForgot">
+  <div class="card">
+    <div class="card-title">Reset password</div>
+    <div class="card-sub">We'll send a reset link to your email</div>
+    <div class="err-msg" id="forgotErr"></div>
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="forgotEmail" placeholder="you@ualberta.ca" autocomplete="email" onkeydown="if(event.key==='Enter')doForgot()">
+    </div>
+    <button class="btn-primary" onclick="doForgot()">Send reset link</button>
+    <div class="links-center">
+      <button class="text-link" onclick="showView('viewLogin')">Back to sign in</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// If already logged in, skip straight to app
+Auth.init();
+if (Auth.getSession()) window.location.replace('index.html');
+
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  // clear errors
+  document.querySelectorAll('.err-msg').forEach(e => { e.classList.remove('show'); e.textContent = ''; });
+}
+
+function showErr(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  if (!email || !pass) { showErr('loginErr', 'Please fill in all fields.'); return; }
+  const res = Auth.login(email, pass);
+  if (res.ok) {
+    window.location.replace('index.html');
+  } else {
+    showErr('loginErr', res.error);
+  }
+}
+
+function doRegister() {
+  const email   = document.getElementById('regEmail').value.trim();
+  const pass    = document.getElementById('regPass').value;
+  const confirm = document.getElementById('regConfirm').value;
+  if (!email || !pass || !confirm) { showErr('regErr', 'Please fill in all fields.'); return; }
+  if (pass !== confirm) { showErr('regErr', 'Passwords do not match.'); return; }
+  const res = Auth.register(email, pass);
+  if (res.ok) {
+    window.location.replace('index.html');
+  } else {
+    showErr('regErr', res.error);
+  }
+}
+
+function doForgot() {
+  const email = document.getElementById('forgotEmail').value.trim();
+  if (!email) { showErr('forgotErr', 'Please enter your email address.'); return; }
+  if (!email.toLowerCase().endsWith('@ualberta.ca')) {
+    showErr('forgotErr', 'Only @ualberta.ca email addresses are supported.');
+    return;
+  }
+  showToast('Reset link sent — check your inbox.');
+  document.getElementById('forgotEmail').value = '';
+}
+</script>
+</body>
+</html>

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>Vocabulary Explorer</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="js/auth.js"></script>
 <!-- ── single source of truth ── -->
 <script src="dict.js"></script>
 <style>
@@ -74,6 +75,8 @@ canvas{display:block;touch-action:none;}
 .icon-btn svg{width:15px;height:15px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .icon-btn.speaker svg{stroke:var(--accent);}
 .icon-btn.link svg{stroke:var(--muted);}
+.icon-btn.star svg{stroke:var(--muted);fill:none;transition:fill .15s,stroke .15s;}
+.icon-btn.star.starred svg{fill:var(--accent);stroke:var(--accent);}
 .meta-row{display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap;}
 .pos-badge{font-size:11px;font-weight:500;padding:3px 10px;border-radius:99px;letter-spacing:.05em;text-transform:uppercase;}
 .pronounc{font-size:13px;color:var(--muted);}
@@ -156,6 +159,9 @@ canvas{display:block;touch-action:none;}
     <a class="icon-btn link" id="sSrc" href="#" target="_blank" title="View in itwêwina" style="display:none">
       <svg viewBox="0 0 24 24" stroke="currentColor"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
     </a>
+    <button class="icon-btn star" id="sheetStar" onclick="toggleSheetStar()" title="Save word">
+      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
   </div>
   <div class="word-trans" id="sTrans"></div>
   <div class="meta-row">
@@ -216,6 +222,9 @@ const UI_TEXT = {
     moreAbout:'ayiwâk ôta →',
   },
 };
+
+Auth.init();
+Auth.requireAuth();
 
 // ── state ──
 const params   = new URLSearchParams(window.location.search);
@@ -460,6 +469,10 @@ function openSheet(w){
   if(w.src){ srcEl.href=ITWEWINA+'/word/'+w.src+'/'; srcEl.style.display='flex'; }
   else srcEl.style.display='none';
 
+  // ── star / bookmark ──
+  const starEl = document.getElementById('sheetStar');
+  if(starEl) starEl.classList.toggle('starred', Auth.isBookmarked(w.key));
+
   // ── definition ──
   // Always show English definition for general users.
   // In Cree mode AND word has a direct Cree entry, prepend the itwewina definition too.
@@ -529,6 +542,17 @@ function closeSheet(){
   document.getElementById('sheet').classList.remove('open');
   currentSheetWord = null;
 }
+function toggleSheetStar(){
+  if(!currentSheetWord) return;
+  Auth.toggleBookmark(currentSheetWord.key);
+  const starEl = document.getElementById('sheetStar');
+  if(starEl){
+    starEl.classList.toggle('starred', Auth.isBookmarked(currentSheetWord.key));
+    starEl.style.transform='scale(0.85)';
+    setTimeout(()=>{ starEl.style.transform=''; },200);
+  }
+}
+
 function speakerTap(btn){
   btn.style.background='rgba(122,164,212,0.2)'; btn.style.transform='scale(0.9)';
   setTimeout(()=>{btn.style.background='';btn.style.transform='';},280);
