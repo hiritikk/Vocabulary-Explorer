@@ -449,9 +449,9 @@ function openSheet(w){
   const hasDirect = w.cree && w.cree !== null;
   const showCree  = lang === 'cree';
 
-  // ── word + translation ──
-  document.getElementById('sWord').textContent  = primary(w);
-  document.getElementById('sTrans').textContent = hasDirect ? translation(w) : '';
+  // ── word + translation — Cree always shown big, English below ──
+  document.getElementById('sWord').textContent  = hasDirect ? w.cree : w.eng;
+  document.getElementById('sTrans').textContent = hasDirect ? w.eng : '';
 
   // ── pronunciation ──
   document.getElementById('sPronounc').textContent = w.pronounc || '';
