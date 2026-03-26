@@ -97,10 +97,10 @@ canvas{display:block;touch-action:none;}
 .dict-num{color:var(--muted);flex-shrink:0;}
 .dict-src-tag{display:inline;font-size:10px;font-weight:500;color:var(--muted);
   background:rgba(255,255,255,.05);border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle;}
-.gap-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(186,119,23,0.1);
-  border:1px solid rgba(186,119,23,0.25);border-radius:8px;padding:8px 12px;margin-bottom:12px;}
-.gap-dot{width:6px;height:6px;border-radius:50%;background:#BA7517;flex-shrink:0;}
-.gap-text{font-size:12px;color:#BA7517;font-weight:500;}
+.gap-badge{display:flex;align-items:center;gap:6px;background:rgba(186,119,23,0.1);
+  border:1px solid rgba(186,119,23,0.25);border-radius:8px;padding:10px 14px;margin-bottom:10px;}
+.gap-dot{width:7px;height:7px;border-radius:50%;background:#BA7517;flex-shrink:0;}
+.gap-text{font-size:13px;color:#BA7517;font-weight:600;}
 .gap-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
 .dict-search-link{display:inline-block;margin-top:4px;font-size:12px;color:var(--accent);text-decoration:none;opacity:.8;}
 .dict-search-link:hover{opacity:1;}
@@ -350,15 +350,9 @@ function drawScene(nodes, alpha){
     ctx.strokeStyle=(hasVerified?col:'#444240')+'90'; ctx.lineWidth=0.9; ctx.stroke();
     ctx.textAlign='center'; ctx.textBaseline='middle';
     if(!hasVerified){
-      const dotR=Math.round(sp.r*.1);
-      ctx.beginPath(); ctx.arc(sp.x,sp.y-sp.r*.32,dotR,0,Math.PI*2);
-      ctx.fillStyle='#BA7517'; ctx.fill();
       ctx.font=`500 ${spPrimSz}px 'DM Sans',sans-serif`;
       ctx.fillStyle='#9a9890';
-      ctx.fillText(clip(ctx,sp.eng,sp.r*1.75),sp.x,sp.y-sp.r*.05);
-      ctx.font=`300 ${spSubSz}px 'DM Sans',sans-serif`;
-      ctx.fillStyle='#BA751799';
-      ctx.fillText('semantic gap',sp.x,sp.y+sp.r*.32);
+      ctx.fillText(clip(ctx,sp.eng,sp.r*1.75),sp.x,sp.y);
     } else {
       const prim=primary(sp), trans=translation(sp);
       const primItalic=lang==='cree'&&hasVerified;
@@ -503,10 +497,9 @@ function openSheet(w){
   // ── "More about this word" — shown for any word that has a full entry ──
   const detailLink = document.getElementById('sDetailLink');
   if(detailLink){
-    const isFullEntry = !!(w.forms || w.grammarNote || w.syllabics);
     detailLink.textContent = u.moreAbout;
     detailLink.href = `word.html?word=${w.key}`;
-    detailLink.style.display = isFullEntry ? '' : 'none';
+    detailLink.style.display = '';
   }
 
   // ── dict results / semantic gap ──
@@ -516,13 +509,13 @@ function openSheet(w){
     const results = w.dictResults || [];
     const first   = results[0] || null;
     let html = '';
+    const gapHeader = `<div class="divider" style="margin-top:6px"></div>
+      <div class="gap-badge"><span class="gap-dot"></span><span class="gap-text">${u.gapTitle}</span></div>
+      <p class="gap-sub">${u.gapSub}</p>`;
     if(!first){
-      html = `<div class="gap-badge"><span class="gap-dot"></span><span class="gap-text">${u.gapTitle}</span></div>
-        <p class="gap-sub">${u.gapSub}
-          <a class="dict-search-link" href="${ITWEWINA}/search?q=${encodeURIComponent(w.eng)}" target="_blank">${u.searchOn}</a>
-        </p>`;
+      html = gapHeader + `<a class="dict-search-link" href="${ITWEWINA}/search?q=${encodeURIComponent(w.eng)}" target="_blank">${u.searchOn}</a>`;
     } else {
-      html = `<div class="s-label">${u.closest}</div>
+      html = gapHeader + `<div class="s-label" style="margin-top:14px">${u.closest}</div>
         <div class="dict-block">
           <div class="dict-header">
             <a class="dict-cree" href="${ITWEWINA}/word/${first.src||''}/" target="_blank">${first.cree}</a>
