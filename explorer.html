@@ -349,13 +349,16 @@ function drawScene(nodes, alpha){
     ctx.fillStyle='#18181a'; ctx.fill();
     ctx.strokeStyle=(hasVerified?col:'#444240')+'90'; ctx.lineWidth=0.9; ctx.stroke();
     ctx.textAlign='center'; ctx.textBaseline='middle';
-    if(lang==='cree'&&!hasVerified){
-      const dotR=Math.round(sp.r*.12);
-      ctx.beginPath(); ctx.arc(sp.x,sp.y-sp.r*.18,dotR,0,Math.PI*2);
+    if(!hasVerified){
+      const dotR=Math.round(sp.r*.1);
+      ctx.beginPath(); ctx.arc(sp.x,sp.y-sp.r*.32,dotR,0,Math.PI*2);
       ctx.fillStyle='#BA7517'; ctx.fill();
+      ctx.font=`500 ${spPrimSz}px 'DM Sans',sans-serif`;
+      ctx.fillStyle='#9a9890';
+      ctx.fillText(clip(ctx,sp.eng,sp.r*1.75),sp.x,sp.y-sp.r*.05);
       ctx.font=`300 ${spSubSz}px 'DM Sans',sans-serif`;
-      ctx.fillStyle='#4a4540';
-      ctx.fillText('semantic gap',sp.x,sp.y+sp.r*.28);
+      ctx.fillStyle='#BA751799';
+      ctx.fillText('semantic gap',sp.x,sp.y+sp.r*.32);
     } else {
       const prim=primary(sp), trans=translation(sp);
       const primItalic=lang==='cree'&&hasVerified;
