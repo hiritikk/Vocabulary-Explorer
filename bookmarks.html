@@ -139,7 +139,7 @@ function render() {
     const primaryLabel = lang === 'cree' ? (w.cree || w.eng) : w.eng;
     const secondaryLabel = lang === 'cree' ? w.eng : (w.cree || '');
     html += `
-      <a class="word-card" href="word.html?word=${encodeURIComponent(w.key)}">
+      <a class="word-card" href="explorer.html?word=${encodeURIComponent(w.key)}&open=1">
         <div class="card-left">
           <div class="card-eng">${secondaryLabel}</div>
           <div class="card-cree">${primaryLabel}</div>
