@@ -53,6 +53,37 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
 .remove-btn:active{background:rgba(224,122,84,0.12);border-color:rgba(224,122,84,0.3);}
 .remove-btn svg{width:13px;height:13px;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;}
 
+/* confirm sheet */
+.confirm-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:50;
+  opacity:0;pointer-events:none;transition:opacity .2s;
+}
+.confirm-backdrop.show{opacity:1;pointer-events:all;}
+.confirm-sheet{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(12px);
+  width:100%;max-width:430px;background:var(--surface2);
+  border-radius:20px 20px 0 0;padding:20px 20px 32px;z-index:51;
+  transition:transform .22s cubic-bezier(.32,1,.48,1);
+}
+.confirm-backdrop.show .confirm-sheet{transform:translateX(-50%) translateY(0);}
+.confirm-word{font-family:'Lora',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px;}
+.confirm-msg{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.confirm-actions{display:flex;flex-direction:column;gap:8px;}
+.confirm-remove{
+  width:100%;padding:14px;border-radius:12px;border:none;
+  background:rgba(224,122,84,0.15);color:#e07a54;
+  font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;
+  transition:background .15s;
+}
+.confirm-remove:active{background:rgba(224,122,84,0.25);}
+.confirm-cancel{
+  width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);
+  background:transparent;color:var(--muted);
+  font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;
+  transition:background .15s;
+}
+.confirm-cancel:active{background:rgba(255,255,255,0.04);}
+
 /* empty state */
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:64px 32px;text-align:center;}
 .empty-icon{width:52px;height:52px;border-radius:50%;background:var(--surface);border:1px solid var(--border);
@@ -83,6 +114,17 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
 
 <div id="listWrap"></div>
 
+<div class="confirm-backdrop" id="confirmBackdrop" onclick="cancelRemove()">
+  <div class="confirm-sheet" onclick="event.stopPropagation()">
+    <div class="confirm-word" id="confirmWord"></div>
+    <div class="confirm-msg">Remove this word from your saved list?</div>
+    <div class="confirm-actions">
+      <button class="confirm-remove" onclick="confirmRemove()">Remove</button>
+      <button class="confirm-cancel" onclick="cancelRemove()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <script>
 Auth.init();
 Auth.requireAuth();
@@ -97,11 +139,29 @@ function setLang(l) {
   render();
 }
 
+let pendingRemoveKey = null;
+
 function removeBm(key, e) {
   e.preventDefault();
   e.stopPropagation();
-  Auth.toggleBookmark(key); // will remove since it's currently bookmarked
-  render();
+  const w = typeof getWord === 'function' ? getWord(key) : DICT[key];
+  pendingRemoveKey = key;
+  document.getElementById('confirmWord').textContent = w ? (w.cree || w.eng) : key;
+  document.getElementById('confirmBackdrop').classList.add('show');
+}
+
+function confirmRemove() {
+  if (pendingRemoveKey) {
+    Auth.toggleBookmark(pendingRemoveKey);
+    pendingRemoveKey = null;
+    document.getElementById('confirmBackdrop').classList.remove('show');
+    render();
+  }
+}
+
+function cancelRemove() {
+  pendingRemoveKey = null;
+  document.getElementById('confirmBackdrop').classList.remove('show');
 }
 
 function render() {
