@@ -333,8 +333,8 @@ function drawScene(nodes, alpha){
   const W=cv.width, H=cv.height, col=TAB_COLOR[activeFilter];
   const { hub, spokes } = nodes;
   const base=Math.min(W,H);
-  const spPrimSz=Math.round(base*.032), spSubSz=Math.round(base*.024);
-  const hubPrimSz=Math.round(base*.052), hubSubSz=Math.round(base*.028);
+  const spPrimSz=Math.round(base*.040), spSubSz=Math.round(base*.030);
+  const hubPrimSz=Math.round(base*.062), hubSubSz=Math.round(base*.034);
   ctx.save(); ctx.globalAlpha=alpha;
   spokes.forEach(sp=>{
     ctx.beginPath(); ctx.moveTo(hub.x,hub.y); ctx.lineTo(sp.x,sp.y);
