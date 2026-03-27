@@ -8,27 +8,32 @@
 <script src="js/auth.js"></script>
 <style>
 :root {
-  --bg:#0f0d0a; --surface:#1a1813; --surface2:#242018;
-  --border:rgba(240,210,140,0.08); --border-focus:rgba(196,138,40,0.45);
-  --text:#f4eddf; --muted:#8c7e6a; --accent:#c48a28; --error:#e07a54;
+  --bg:#110e0b; --surface:#1c1810; --surface2:#252017;
+  --border:rgba(240,200,120,0.09); --border-focus:rgba(193,127,36,0.45);
+  --text:#f3ece0; --muted:#8a7d6a; --accent:#c17f24; --error:#e07a54;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
 body{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   max-width:430px;margin:0 auto;padding:0 28px;min-height:100dvh;
-  background-image:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(196,138,40,0.06) 0%, transparent 70%);
+  background-image:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(193,127,36,0.07) 0%, transparent 70%);
 }
-.logo-wrap{text-align:center;margin-bottom:40px;}
-.logo-rule{display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:12px;}
-.logo-rule-line{flex:1;max-width:40px;height:1px;background:rgba(196,138,40,0.3);}
+.logo-wrap{text-align:center;margin-bottom:40px;position:relative;overflow:hidden;padding:16px 0;}
+.logo-watermark{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  font-size:96px;color:var(--accent);opacity:0.055;pointer-events:none;
+  white-space:nowrap;line-height:1;z-index:0;user-select:none;
+}
+.logo-rule{display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:12px;position:relative;z-index:1;}
+.logo-rule-line{flex:1;max-width:40px;height:1px;background:rgba(193,127,36,0.3);}
 .logo-sub{font-size:11px;font-weight:300;color:var(--accent);letter-spacing:.18em;text-transform:uppercase;opacity:.8;}
-.logo-title{font-family:'Lora',serif;font-size:clamp(28px,7vw,34px);font-weight:600;color:var(--text);line-height:1.2;margin-top:2px;}
+.logo-title{font-family:'Lora',serif;font-size:clamp(28px,7vw,34px);font-weight:600;color:var(--text);line-height:1.2;margin-top:2px;position:relative;z-index:1;}
 .logo-title span{color:var(--accent);}
 .card{
   width:100%;background:var(--surface);
   border:1px solid var(--border);border-radius:20px;padding:28px 24px;
-  box-shadow:0 1px 0 rgba(240,210,140,0.04) inset, 0 24px 48px rgba(0,0,0,0.4);
+  box-shadow:0 1px 0 rgba(240,200,120,0.04) inset, 0 24px 48px rgba(0,0,0,0.4);
 }
 .card-title{font-size:17px;font-weight:500;color:var(--text);margin-bottom:4px;}
 .card-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5;}
@@ -49,7 +54,7 @@ body{
 .err-msg.show{display:block;}
 .toast{
   position:fixed;bottom:36px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--surface2);border:1px solid rgba(196,138,40,0.3);
+  background:var(--surface2);border:1px solid rgba(193,127,36,0.3);
   border-radius:12px;padding:12px 20px;font-size:14px;color:var(--accent);
   white-space:nowrap;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:99;
 }
@@ -73,6 +78,7 @@ body{
 <body>
 
 <div class="logo-wrap">
+  <div class="logo-watermark" aria-hidden="true">ᓀᐦᐃᔭᐍᐏᐣ</div>
   <div class="logo-rule">
     <div class="logo-rule-line"></div>
     <div class="logo-sub">nêhiyawêwin</div>

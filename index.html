@@ -9,15 +9,15 @@
 <script src="dict.js"></script>
 <style>
 :root {
-  --bg:#0f0d0a; --surface:#1a1813; --surface2:#242018;
-  --border:rgba(240,210,140,0.08); --text:#f4eddf; --muted:#8c7e6a; --accent:#c48a28;
+  --bg:#110e0b; --surface:#1c1810; --surface2:#252017;
+  --border:rgba(240,200,120,0.09); --text:#f3ece0; --muted:#8a7d6a; --accent:#c17f24;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
 body{
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   max-width:430px;margin:0 auto;padding:0 28px;min-height:100dvh;
-  background-image:radial-gradient(ellipse 80% 45% at 50% 0%, rgba(196,138,40,0.05) 0%, transparent 65%);
+  background-image:radial-gradient(ellipse 90% 55% at 50% 0%, rgba(193,127,36,0.07) 0%, transparent 70%);
 }
 .top-bar{
   position:fixed;top:0;left:50%;transform:translateX(-50%);
@@ -38,19 +38,25 @@ body{
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;transition:background .15s,border-color .15s;
 }
-.drop-star:active{background:rgba(196,138,40,0.12);}
+.drop-star:active{background:rgba(193,127,36,0.12);}
 .drop-star svg{width:13px;height:13px;fill:none;stroke:var(--muted);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:fill .15s,stroke .15s;}
 .drop-star.starred svg{fill:var(--accent);stroke:var(--accent);}
 .toggle-wrap{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px;gap:2px;}
 .lang-btn{padding:5px 14px;border-radius:99px;border:none;background:transparent;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--muted);cursor:pointer;transition:all .18s;}
 .lang-btn.active{background:var(--accent);color:#0c0800;font-weight:500;}
-.logo-wrap{text-align:center;margin-bottom:44px;}
+.logo-wrap{text-align:center;margin-bottom:44px;position:relative;overflow:hidden;}
+.logo-watermark{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);
+  font-size:96px;color:var(--accent);opacity:0.055;pointer-events:none;
+  white-space:nowrap;line-height:1;z-index:0;user-select:none;
+}
 .logo-sub{
   font-size:11px;font-weight:300;color:var(--accent);letter-spacing:.18em;text-transform:uppercase;margin-bottom:12px;opacity:.8;
   display:flex;align-items:center;justify-content:center;gap:12px;
+  position:relative;z-index:1;
 }
-.logo-sub::before,.logo-sub::after{content:'';display:block;width:28px;height:1px;background:rgba(196,138,40,0.35);}
-.logo-title{font-family:'Lora',serif;font-size:clamp(30px,8vw,38px);font-weight:600;color:var(--text);line-height:1.15;}
+.logo-sub::before,.logo-sub::after{content:'';display:block;width:28px;height:1px;background:rgba(193,127,36,0.35);}
+.logo-title{font-family:'Lora',serif;font-size:clamp(32px,9vw,42px);font-weight:600;color:var(--text);line-height:1.15;position:relative;z-index:1;}
 .logo-title span{color:var(--accent);}
 .search-outer{width:100%;position:relative;}
 .search-wrap{width:100%;position:relative;}
@@ -61,7 +67,7 @@ body{
   outline:none;transition:border-color .2s,border-radius .15s;-webkit-appearance:none;
 }
 .search-input::placeholder{color:var(--muted);}
-.search-input:focus{border-color:rgba(196,138,40,0.4);}
+.search-input:focus{border-color:rgba(193,127,36,0.4);}
 .search-input.open{border-radius:14px 14px 0 0;border-bottom-color:transparent;}
 .search-btns{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;}
 .search-btn{width:36px;height:36px;border-radius:10px;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s;}
@@ -74,30 +80,30 @@ body{
 .mic-btn.listening svg{stroke:#e07a54;}
 .dropdown{
   display:none;position:absolute;top:100%;left:0;right:0;
-  background:var(--surface);border:1px solid rgba(196,138,40,0.35);border-top:none;
+  background:var(--surface);border:1px solid rgba(193,127,36,0.35);border-top:none;
   border-radius:0 0 14px 14px;z-index:20;max-height:260px;overflow-y:auto;scrollbar-width:none;
 }
 .dropdown::-webkit-scrollbar{display:none;}
 .dropdown.visible{display:block;}
 .drop-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s;}
 .drop-item:last-child{border-bottom:none;}
-.drop-item:hover,.drop-item.focused{background:rgba(196,138,40,0.05);}
+.drop-item:hover,.drop-item.focused{background:rgba(193,127,36,0.05);}
 .drop-primary{font-size:15px;font-weight:500;color:var(--text);flex:1;min-width:0;}
 .drop-primary em{font-style:normal;color:var(--accent);}
 .drop-secondary{font-family:'Lora',serif;font-style:italic;font-size:12px;color:var(--muted);flex-shrink:0;}
-.drop-tag{font-size:10px;font-weight:500;letter-spacing:.05em;padding:2px 7px;border-radius:99px;background:rgba(196,138,40,0.12);color:var(--accent);flex-shrink:0;}
+.drop-tag{font-size:10px;font-weight:500;letter-spacing:.05em;padding:2px 7px;border-radius:99px;background:rgba(193,127,36,0.12);color:var(--accent);flex-shrink:0;}
 .drop-connect{
   flex-shrink:0;width:28px;height:28px;border-radius:8px;
   background:transparent;border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;transition:background .15s,border-color .15s;color:var(--muted);
 }
-.drop-connect:hover{background:rgba(196,138,40,0.12);border-color:rgba(196,138,40,0.3);color:var(--accent);}
+.drop-connect:hover{background:rgba(193,127,36,0.12);border-color:rgba(193,127,36,0.3);color:var(--accent);}
 .drop-connect svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;}
 .drop-divider{padding:6px 16px 4px;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid var(--border);}
 .drop-empty{padding:16px;font-size:13px;color:var(--muted);text-align:center;}
 .hint{margin-top:14px;font-size:12px;color:var(--muted);text-align:center;}
-.hint span{color:rgba(196,138,40,0.7);cursor:pointer;transition:color .15s;}
+.hint span{color:rgba(193,127,36,0.7);cursor:pointer;transition:color .15s;}
 .hint span:hover{color:var(--accent);}
 </style>
 </head>
@@ -119,6 +125,7 @@ body{
 </div>
 
 <div class="logo-wrap">
+  <div class="logo-watermark" aria-hidden="true">ᓀᐦᐃᔭᐍᐏᐣ</div>
   <div class="logo-sub" id="logoSub">nêhiyawêwin</div>
   <div class="logo-title" id="logoTitle">Vocabulary<br><span id="logoSpan">Explorer</span></div>
 </div>

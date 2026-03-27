@@ -8,11 +8,11 @@
 <script src="js/auth.js"></script>
 <script src="dict.js"></script>
 <style>
-:root{--bg:#0f0d0a;--surface:#1a1813;--surface2:#242018;--border:rgba(240,210,140,0.08);--text:#f4eddf;--muted:#8c7e6a;--accent:#c48a28;}
+:root{--bg:#110e0b;--surface:#1c1810;--surface2:#252017;--border:rgba(240,200,120,0.09);--text:#f3ece0;--muted:#8a7d6a;--accent:#c17f24;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{background:var(--bg);}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max-width:430px;margin:0 auto;min-height:100dvh;padding-bottom:48px;}
-.topbar{position:sticky;top:0;z-index:10;background:rgba(15,13,10,0.96);backdrop-filter:blur(10px);
+.topbar{position:sticky;top:0;z-index:10;background:rgba(17,14,11,0.96);backdrop-filter:blur(10px);
   display:flex;align-items:center;gap:12px;padding:14px 20px 12px;border-bottom:1px solid var(--border);}
 .back-btn{width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border);
   cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -34,7 +34,7 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
   cursor:pointer;transition:background .12s;text-decoration:none;position:relative;
 }
 .word-card::before{
-  content:'';position:absolute;left:0;top:12px;bottom:12px;width:2px;
+  content:'';position:absolute;left:0;top:12px;bottom:12px;width:3px;
   border-radius:0 2px 2px 0;background:var(--pos-col,var(--border));opacity:0.6;transition:opacity .15s;
 }
 .word-card:active{background:var(--surface);}
