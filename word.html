@@ -109,9 +109,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
     <button class="nav-btn star-btn" id="starBtn" onclick="toggleStar()" title="Save word">
       <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <a class="nav-btn" href="bookmarks.html" title="Saved words">
-      <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-    </a>
   </div>
   <div class="script-wrap">
     <div class="script-toggle">
@@ -265,8 +262,8 @@ if (!w) {
     document.getElementById('defText').textContent    = w.defs.map(d => d.text).join('; ');
     document.getElementById('defSource').textContent  = 'Source: ' + [...new Set(w.defs.map(d=>d.source))].join(', ');
   } else {
-    document.getElementById('defText').textContent = '';
-    document.getElementById('defSource').textContent = '';
+    document.getElementById('defText').style.cssText = 'color:var(--muted);font-style:italic;font-size:13px';
+    document.getElementById('defText').textContent = 'No definition available yet. This entry is being added from itwêwina progressively.';
   }
 
   // example sentence
@@ -275,8 +272,12 @@ if (!w) {
   if(document.getElementById('exNote'))
     document.getElementById('exNote').style.display = w.approx ? '' : 'none';
 
-  // grammar
-  if (w.grammarNote) document.getElementById('grammarBody').innerHTML = w.grammarNote;
+  if (w.grammarNote) {
+    document.getElementById('grammarBody').innerHTML = w.grammarNote;
+  } else {
+    document.getElementById('grammarBody').style.cssText = 'color:var(--muted);font-style:italic;font-size:13px';
+    document.getElementById('grammarBody').textContent = 'Grammar notes for this word have not been added yet.';
+  }
   if (w.grammarHighlight) document.getElementById('grammarHighlight').innerHTML = w.grammarHighlight;
 
   // writing systems
@@ -296,16 +297,21 @@ if (!w) {
     ...(w.pos_forms||[]).map(k=>({ ...getWord(k), relType:'word form', col:'#c8a96e' })),
   ].filter(r => r && r.eng);
 
-  document.getElementById('relatedList').innerHTML = relatedWords.slice(0,6).map(r=>`
-    <a class="rel-row" href="word.html?word=${r.key}">
-      <span class="rel-dot" style="background:${r.col}"></span>
-      <div class="rel-left">
-        <div class="rel-cree">${r.cree || '—'}</div>
-        <div class="rel-eng">${r.eng}</div>
-      </div>
-      <span class="rel-type">${r.relType}</span>
-      <span class="rel-arr">›</span>
-    </a>`).join('');
+  if (relatedWords.length) {
+    document.getElementById('relatedList').innerHTML = relatedWords.slice(0,6).map(r=>`
+      <a class="rel-row" href="word.html?word=${r.key}">
+        <span class="rel-dot" style="background:${r.col}"></span>
+        <div class="rel-left">
+          <div class="rel-cree">${r.cree || '—'}</div>
+          <div class="rel-eng">${r.eng}</div>
+        </div>
+        <span class="rel-type">${r.relType}</span>
+        <span class="rel-arr">›</span>
+      </a>`).join('');
+  } else {
+    document.getElementById('relatedList').style.cssText = 'color:var(--muted);font-style:italic;font-size:13px;padding:4px 0';
+    document.getElementById('relatedList').textContent = 'No related words have been linked for this entry yet.';
+  }
 
   // word forms — from forms array in DICT
   if (w.forms && w.forms.length) {
@@ -315,7 +321,9 @@ if (!w) {
         ${g.rows.map(([p,fw])=>`<div class="form-row"><span class="form-person">${p}</span><span class="form-word">${fw}</span></div>`).join('')}
       </div>`).join('');
   } else {
-    document.querySelector('.card:has(#formsList)').style.display='none';
+    document.getElementById('formsList').style.cssText = 'color:var(--muted);font-style:italic;font-size:13px;padding:4px 0';
+    document.getElementById('formsList').textContent = 'Word forms for this entry have not been added yet.';
+    document.querySelector('.forms-note').style.display = 'none';
   }
 
   // source
