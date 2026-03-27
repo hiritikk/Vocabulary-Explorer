@@ -6,20 +6,18 @@
 <title>Word Detail</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="js/auth.js"></script>
-<!-- ── single source of truth ── -->
 <script src="dict.js"></script>
 <style>
-:root{--bg:#0e0e0f;--surface:#18181a;--surface2:#222224;--border:rgba(255,255,255,0.08);--text:#f0ede6;--muted:#7a7870;--accent:#7aa4d4;--amber:#BA7517;}
+:root{--bg:#0f0d0a;--surface:#1a1813;--surface2:#242018;--border:rgba(240,210,140,0.08);--text:#f4eddf;--muted:#8c7e6a;--accent:#c48a28;--amber:#BA7517;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html{background:var(--bg);}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max-width:430px;margin:0 auto;min-height:100dvh;padding-bottom:60px;}
-.topbar{position:sticky;top:0;z-index:10;background:rgba(14,14,15,0.95);backdrop-filter:blur(8px);
+.topbar{position:sticky;top:0;z-index:10;background:rgba(15,13,10,0.96);backdrop-filter:blur(10px);
   display:flex;align-items:center;gap:10px;padding:14px 20px 12px;border-bottom:1px solid var(--border);}
 .topbar-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
 .nav-btn{width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border);
   cursor:pointer;display:flex;align-items:center;justify-content:center;text-decoration:none;}
 .nav-btn svg{width:14px;height:14px;fill:none;stroke:var(--muted);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.star-btn svg.filled{fill:var(--accent);stroke:var(--accent);}
 .star-btn.starred svg{fill:var(--accent);stroke:var(--accent);}
 .back-btn{width:32px;height:32px;border-radius:50%;background:var(--surface);border:1px solid var(--border);
   cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -29,18 +27,22 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
 .script-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px;gap:2px;}
 .sc-btn{padding:4px 10px;border-radius:99px;border:none;background:transparent;font-size:11px;
   font-family:'DM Sans',sans-serif;color:var(--muted);cursor:pointer;transition:all .15s;}
-.sc-btn.active{background:var(--accent);color:#0a1520;font-weight:500;}
-.script-hint{font-size:10px;color:#3a3835;text-align:right;max-width:120px;line-height:1.3;}
-.hero{padding:28px 24px 24px;background:var(--surface);margin-bottom:8px;}
-.hero-eng{font-size:11px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;}
-.hero-cree{font-family:'Lora',serif;font-size:38px;font-weight:600;color:var(--text);line-height:1.1;margin-bottom:4px;}
-.hero-syl{font-size:24px;color:var(--accent);margin-bottom:12px;font-weight:300;letter-spacing:.04em;display:none;}
+.sc-btn.active{background:var(--accent);color:#0c0800;font-weight:500;}
+.script-hint{font-size:10px;color:#3a3530;text-align:right;max-width:120px;line-height:1.3;}
+.hero{
+  padding:32px 24px 26px;
+  background:linear-gradient(180deg, var(--surface) 0%, rgba(26,24,19,0.6) 100%);
+  margin-bottom:8px;border-bottom:1px solid var(--border);
+}
+.hero-eng{font-size:11px;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:.12em;margin-bottom:10px;opacity:.8;}
+.hero-cree{font-family:'Lora',serif;font-size:42px;font-weight:600;color:var(--text);line-height:1.05;margin-bottom:4px;}
+.hero-syl{font-size:26px;color:var(--accent);margin-bottom:14px;font-weight:300;letter-spacing:.04em;display:none;}
 .hero-syl.show{display:block;}
-.pronounc-row{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.pronounc-row{display:flex;align-items:center;gap:8px;margin-bottom:18px;}
 .pronounc{font-size:14px;color:var(--muted);flex:1;}
 .icon-btn{width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:var(--surface2);
   cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;text-decoration:none;flex-shrink:0;}
-.icon-btn:active{background:rgba(255,255,255,.1);}
+.icon-btn:active{background:rgba(255,255,255,.08);}
 .icon-btn svg{width:14px;height:14px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .icon-btn.speaker svg{stroke:var(--accent);}
 .icon-btn.link svg{stroke:var(--muted);}
@@ -53,11 +55,11 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
   margin-bottom:14px;display:flex;align-items:center;gap:8px;}
 .card-title-line{flex:1;height:1px;background:var(--border);}
 .def-text{font-size:16px;color:var(--text);line-height:1.7;}
-.def-source{font-size:11px;color:#4a4540;margin-top:4px;}
+.def-source{font-size:11px;color:#4a4038;margin-top:4px;}
 .ex-divider{height:1px;background:var(--border);margin:14px 0;}
 .ex-label{font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
-.ex-text{font-family:'Lora',serif;font-style:italic;font-size:15px;color:#b0ada6;line-height:1.65;}
-.ex-note{font-size:11px;color:#3a3835;margin-top:6px;}
+.ex-text{font-family:'Lora',serif;font-style:italic;font-size:15px;color:#b0a898;line-height:1.65;}
+.ex-note{font-size:11px;color:#3a3530;margin-top:6px;}
 .grammar-body{font-size:14px;color:var(--muted);line-height:1.7;}
 .grammar-body strong{color:var(--text);font-weight:500;}
 .grammar-highlight{margin-top:14px;padding:12px 14px;background:var(--surface2);border-radius:10px;
@@ -78,22 +80,19 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
 .rel-cree{font-family:'Lora',serif;font-size:15px;color:var(--text);}
 .rel-eng{font-size:12px;color:var(--muted);margin-top:1px;}
 .rel-type{font-size:11px;color:var(--muted);flex-shrink:0;}
-.rel-arr{font-size:14px;color:rgba(255,255,255,.15);flex-shrink:0;}
+.rel-arr{font-size:14px;color:rgba(255,255,255,.12);flex-shrink:0;}
 .forms-group{margin-bottom:20px;}
 .forms-group:last-child{margin-bottom:0;}
 .forms-group-label{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;
   margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);}
-.form-row{display:flex;align-items:baseline;gap:12px;padding:8px 0;
-  border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;}
+.form-row{display:flex;align-items:baseline;gap:12px;padding:8px 0;border-bottom:1px solid rgba(240,210,140,0.04);font-size:13px;}
 .form-row:last-child{border-bottom:none;}
 .form-person{color:var(--muted);min-width:100px;flex-shrink:0;font-size:12px;}
 .form-word{font-family:'Lora',serif;color:var(--text);font-size:15px;}
-.forms-note{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:16px;
-  padding:10px 12px;background:var(--surface2);border-radius:8px;}
-.source-card{margin:0 0 8px;padding:16px 24px;background:var(--surface);
-  display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
+.forms-note{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:16px;padding:10px 12px;background:var(--surface2);border-radius:8px;}
+.source-card{margin:0 0 8px;padding:16px 24px;background:var(--surface);display:flex;align-items:flex-start;justify-content:space-between;gap:12px;}
 .source-text{font-size:12px;color:var(--muted);line-height:1.6;}
-.source-text strong{color:#5a5850;font-weight:500;}
+.source-text strong{color:#504840;font-weight:500;}
 .itwewina-link{font-size:12px;color:var(--accent);text-decoration:none;opacity:.7;flex-shrink:0;}
 .itwewina-link:hover{opacity:1;}
 </style>
@@ -109,9 +108,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
     <button class="nav-btn star-btn" id="starBtn" onclick="toggleStar()" title="Save word">
       <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
     </button>
-    <a class="nav-btn" href="bookmarks.html" title="Saved words">
-      <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-    </a>
   </div>
   <div class="script-wrap">
     <div class="script-toggle">
@@ -122,7 +118,6 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
   </div>
 </div>
 
-<!-- hero -->
 <div class="hero">
   <div class="hero-eng"  id="heroEng"></div>
   <div class="hero-cree" id="heroCree"></div>
@@ -138,14 +133,13 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
   </div>
   <div class="pos-row">
     <span class="pos-badge" id="posBadge"></span>
-    <span class="pos-note"  id="posNote"><span class="pos-dot" id="posDot"></span><span id="posNoteText"></span></span>
+    <span class="pos-note" id="posNote"><span class="pos-dot" id="posDot"></span><span id="posNoteText"></span></span>
   </div>
 </div>
 
-<!-- definition -->
 <div class="card">
   <div class="card-title">Definition <span class="card-title-line"></span></div>
-  <div class="def-text"   id="defText"></div>
+  <div class="def-text" id="defText"></div>
   <div class="def-source" id="defSource"></div>
   <div class="ex-divider"></div>
   <div class="ex-label">Example</div>
@@ -153,76 +147,55 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
   <div class="ex-note" id="exNote" style="display:none">⚠ Approximate — prototype only. Verify with a Cree language expert.</div>
 </div>
 
-<!-- grammar -->
 <div class="card">
   <div class="card-title">Grammar note <span class="card-title-line"></span></div>
-  <div class="grammar-body"      id="grammarBody"></div>
+  <div class="grammar-body" id="grammarBody"></div>
   <div class="grammar-highlight" id="grammarHighlight"></div>
 </div>
 
-<!-- writing systems -->
 <div class="card">
   <div class="card-title">Writing systems <span class="card-title-line"></span></div>
   <div class="sro-note" id="sroNote"></div>
   <div style="height:1px;background:var(--border);margin:16px 0"></div>
   <div class="card-title" style="margin-bottom:12px">Syllabics <span class="card-title-line"></span></div>
-  <div class="syl-big"       id="sylBig"></div>
+  <div class="syl-big" id="sylBig"></div>
   <div class="syl-breakdown" id="sylBreak"></div>
-  <div class="syl-note"      id="sylNote"></div>
+  <div class="syl-note" id="sylNote"></div>
 </div>
 
-<!-- related words -->
 <div class="card">
   <div class="card-title">Related words <span class="card-title-line"></span></div>
   <div id="relatedList"></div>
 </div>
 
-<!-- word forms -->
 <div class="card">
   <div class="card-title">Word forms <span class="card-title-line"></span></div>
   <div class="forms-note">In Cree, a single verb changes form depending on who is doing the action. All forms below are confirmed from itwêwina (Wolvengrey, 2001).</div>
   <div id="formsList"></div>
 </div>
 
-<!-- source -->
 <div class="source-card">
   <div class="source-text" id="sourceText"></div>
   <a class="itwewina-link" id="sourceLink" href="#" target="_blank">itwêwina ↗</a>
 </div>
 
 <script>
-/**
- * word.html
- *
- * How it works:
- * 1. dict.js is loaded first — provides DICT, getWord(), ITWEWINA, POS_COLORS
- * 2. URL param ?word=walk determines which word to show
- * 3. getWord(key) returns the full word object from DICT
- * 4. All sections (definition, grammar, syllabics, forms, related) are built from that object
- * 5. SRO/Syllabics toggle switches the script display
- * 6. Related words link back to word.html?word=<key>
- */
-
 Auth.init();
 Auth.requireAuth();
 
 const params = new URLSearchParams(window.location.search);
 const key    = (params.get('word') || 'walk').toLowerCase();
-const w      = getWord(key); // from dict.js
+const w      = getWord(key);
 let script   = 'sro';
 
 function updateStarBtn() {
-  const btn = document.getElementById('starBtn');
-  if (!btn) return;
+  const btn = document.getElementById('starBtn'); if (!btn) return;
   btn.classList.toggle('starred', Auth.isBookmarked(key));
 }
-
 function toggleStar() {
-  Auth.toggleBookmark(key);
-  updateStarBtn();
+  Auth.toggleBookmark(key); updateStarBtn();
   const btn = document.getElementById('starBtn');
-  btn.style.transform = 'scale(0.85)';
-  setTimeout(() => btn.style.transform = '', 200);
+  btn.style.transform = 'scale(0.85)'; setTimeout(() => btn.style.transform = '', 200);
 }
 
 if (!w) {
@@ -232,11 +205,9 @@ if (!w) {
     <a href="index.html" style="color:var(--accent)">← Search again</a>
   </div>`;
 } else {
-  // populate topbar
   document.getElementById('topbarLabel').textContent = w.eng;
   document.title = w.eng + ' — Vocabulary Explorer';
 
-  // hero
   document.getElementById('heroEng').textContent  = w.eng.toUpperCase();
   document.getElementById('heroCree').textContent = w.cree || '—';
   document.getElementById('heroSyl').textContent  = w.syllabics || '';
@@ -244,13 +215,11 @@ if (!w) {
   document.getElementById('heroLink').href = w.src ? `${ITWEWINA}/word/${w.src}/` : ITWEWINA;
   if (!w.src) document.getElementById('heroLink').style.display = 'none';
 
-  // POS badge — reads POS_COLORS from dict.js
   const posCol = POS_COLORS[w.pos] || '#888';
   const pb = document.getElementById('posBadge');
-  pb.textContent = `${w.posLabel || w.pos}`;
+  pb.textContent = w.posLabel || w.pos;
   pb.style.cssText = `background:${posCol}22;color:${posCol};border:1px solid ${posCol}35`;
 
-  // POS note (verb vs adjective warning)
   const dotColor = w.posWarning ? '#e07a54' : '#9fc87a';
   const bgColor  = w.posWarning ? 'rgba(224,122,84,0.1)' : 'rgba(99,153,34,0.1)';
   const bdColor  = w.posWarning ? 'rgba(224,122,84,0.2)' : 'rgba(99,153,34,0.2)';
@@ -260,26 +229,26 @@ if (!w) {
   document.getElementById('posNoteText').textContent = w.posNote || '';
   if (!w.posNote) pn.style.display = 'none';
 
-  // definitions — from defs array in DICT
   if (w.defs && w.defs.length) {
-    document.getElementById('defText').textContent    = w.defs.map(d => d.text).join('; ');
-    document.getElementById('defSource').textContent  = 'Source: ' + [...new Set(w.defs.map(d=>d.source))].join(', ');
+    document.getElementById('defText').textContent   = w.defs.map(d => d.text).join('; ');
+    document.getElementById('defSource').textContent = 'Source: ' + [...new Set(w.defs.map(d=>d.source))].join(', ');
   } else {
-    document.getElementById('defText').textContent = '';
-    document.getElementById('defSource').textContent = '';
+    document.getElementById('defText').style.cssText = 'color:var(--muted);font-style:italic;font-size:13px';
+    document.getElementById('defText').textContent = 'No definition available yet. This entry is being added from itwêwina progressively.';
   }
 
-  // example sentence
   const rawEx = w.exApprox || w.exEng || w.ex || '';
   document.getElementById('exText').textContent = rawEx.replace(' [prototype approximation]','');
-  if(document.getElementById('exNote'))
-    document.getElementById('exNote').style.display = w.approx ? '' : 'none';
+  if (document.getElementById('exNote')) document.getElementById('exNote').style.display = w.approx ? '' : 'none';
 
-  // grammar
-  if (w.grammarNote) document.getElementById('grammarBody').innerHTML = w.grammarNote;
+  if (w.grammarNote) {
+    document.getElementById('grammarBody').innerHTML = w.grammarNote;
+  } else {
+    document.getElementById('grammarBody').style.cssText = 'color:var(--muted);font-style:italic;font-size:13px';
+    document.getElementById('grammarBody').textContent = 'Grammar notes for this word have not been added yet.';
+  }
   if (w.grammarHighlight) document.getElementById('grammarHighlight').innerHTML = w.grammarHighlight;
 
-  // writing systems
   if (w.sroNote) document.getElementById('sroNote').textContent = w.sroNote;
   if (w.syllabics) document.getElementById('sylBig').textContent = w.syllabics;
   if (w.sylNote)   document.getElementById('sylNote').textContent = w.sylNote;
@@ -288,26 +257,25 @@ if (!w) {
       <div class="syl-piece"><span class="syl-char">${c}</span><span class="syl-roman">${r}</span></div>`).join('');
   }
 
-  // related words — pulls from DICT to get full word data
   const relatedWords = [
-    ...(w.synonyms||[]).map(k=>({ ...getWord(k), relType:'synonym', col:'#8bbfa8' })),
-    ...(w.antonyms||[]).map(k=>({ ...getWord(k), relType:'antonym', col:'#e07a54' })),
-    ...(w.category||[]).map(k=>({ ...getWord(k), relType:'category', col:'#9fc87a' })),
-    ...(w.pos_forms||[]).map(k=>({ ...getWord(k), relType:'word form', col:'#c8a96e' })),
-  ].filter(r => r && r.eng);
+    ...(w.synonyms||[]).map(k=>({...getWord(k),relType:'synonym',col:'#8bbfa8'})),
+    ...(w.antonyms||[]).map(k=>({...getWord(k),relType:'antonym',col:'#e07a54'})),
+    ...(w.category||[]).map(k=>({...getWord(k),relType:'category',col:'#9fc87a'})),
+    ...(w.pos_forms||[]).map(k=>({...getWord(k),relType:'word form',col:'#c8a96e'})),
+  ].filter(r=>r&&r.eng);
 
-  document.getElementById('relatedList').innerHTML = relatedWords.slice(0,6).map(r=>`
-    <a class="rel-row" href="word.html?word=${r.key}">
-      <span class="rel-dot" style="background:${r.col}"></span>
-      <div class="rel-left">
-        <div class="rel-cree">${r.cree || '—'}</div>
-        <div class="rel-eng">${r.eng}</div>
-      </div>
-      <span class="rel-type">${r.relType}</span>
-      <span class="rel-arr">›</span>
-    </a>`).join('');
+  if (relatedWords.length) {
+    document.getElementById('relatedList').innerHTML = relatedWords.slice(0,6).map(r=>`
+      <a class="rel-row" href="word.html?word=${r.key}">
+        <span class="rel-dot" style="background:${r.col}"></span>
+        <div class="rel-left"><div class="rel-cree">${r.cree||'—'}</div><div class="rel-eng">${r.eng}</div></div>
+        <span class="rel-type">${r.relType}</span><span class="rel-arr">›</span>
+      </a>`).join('');
+  } else {
+    document.getElementById('relatedList').style.cssText = 'color:var(--muted);font-style:italic;font-size:13px;padding:4px 0';
+    document.getElementById('relatedList').textContent = 'No related words have been linked for this entry yet.';
+  }
 
-  // word forms — from forms array in DICT
   if (w.forms && w.forms.length) {
     document.getElementById('formsList').innerHTML = w.forms.map(g=>`
       <div class="forms-group">
@@ -315,30 +283,26 @@ if (!w) {
         ${g.rows.map(([p,fw])=>`<div class="form-row"><span class="form-person">${p}</span><span class="form-word">${fw}</span></div>`).join('')}
       </div>`).join('');
   } else {
-    document.querySelector('.card:has(#formsList)').style.display='none';
+    document.getElementById('formsList').style.cssText = 'color:var(--muted);font-style:italic;font-size:13px;padding:4px 0';
+    document.getElementById('formsList').textContent = 'Word forms for this entry have not been added yet.';
+    document.querySelector('.forms-note').style.display = 'none';
   }
 
-  // source
-  if (w.sourceFull) {
-    document.getElementById('sourceText').innerHTML = `Source: <strong>${w.sourceFull}</strong>. <strong>${w.sourceTag||''}</strong>`;
-  }
+  if (w.sourceFull) document.getElementById('sourceText').innerHTML = `Source: <strong>${w.sourceFull}</strong>. <strong>${w.sourceTag||''}</strong>`;
   if (w.src) document.getElementById('sourceLink').href = `${ITWEWINA}/word/${w.src}/`;
   updateStarBtn();
 }
 
-// ── script toggle ──
 function setScript(s){
-  script = s;
-  document.getElementById('btnSRO').classList.toggle('active', s==='sro');
-  document.getElementById('btnSyl').classList.toggle('active', s==='syllabics');
-  const sylEl = document.getElementById('heroSyl');
-  const creEl = document.getElementById('heroCree');
-  if(sylEl) sylEl.classList.toggle('show', s==='syllabics');
-  if(creEl) creEl.style.display = s==='syllabics' ? 'none' : '';
+  script=s;
+  document.getElementById('btnSRO').classList.toggle('active',s==='sro');
+  document.getElementById('btnSyl').classList.toggle('active',s==='syllabics');
+  const sylEl=document.getElementById('heroSyl'), creEl=document.getElementById('heroCree');
+  if(sylEl) sylEl.classList.toggle('show',s==='syllabics');
+  if(creEl) creEl.style.display=s==='syllabics'?'none':'';
 }
-
 function speakerTap(btn){
-  btn.style.background='rgba(122,164,212,0.2)'; btn.style.transform='scale(0.9)';
+  btn.style.background='rgba(196,138,40,0.2)'; btn.style.transform='scale(0.9)';
   setTimeout(()=>{btn.style.background='';btn.style.transform='';},280);
 }
 </script>

@@ -6,60 +6,55 @@
 <title>Vocabulary Explorer</title>
 <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="js/auth.js"></script>
-<!-- ── single source of truth ── -->
 <script src="dict.js"></script>
 <style>
 :root {
-  --bg:#0e0e0f;--surface:#18181a;--border:rgba(255,255,255,0.07);
-  --text:#f0ede6;--muted:#7a7870;--accent:#7aa4d4;
+  --bg:#0f0d0a;--surface:#1a1813;--surface2:#242018;--border:rgba(240,210,140,0.08);
+  --text:#f4eddf;--muted:#8c7e6a;--accent:#c48a28;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
-  height:100dvh;display:flex;flex-direction:column;overflow:hidden;
-  max-width:430px;margin:0 auto;}
-.topbar{padding:14px 20px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+  height:100dvh;display:flex;flex-direction:column;overflow:hidden;max-width:430px;margin:0 auto;}
+.topbar{padding:14px 20px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0;border-bottom:1px solid var(--border);}
 .back-btn{width:32px;height:32px;border-radius:50%;background:var(--surface);
   border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;
   justify-content:center;flex-shrink:0;transition:background .15s;}
-.back-btn:active{background:#222;}
+.back-btn:active{background:var(--surface2);}
 .back-btn svg{width:14px;height:14px;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;}
-.topbar-sub{font-size:11px;font-weight:300;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:1px;}
+.topbar-sub{font-size:10px;font-weight:300;color:var(--accent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1px;opacity:.7;}
 .topbar-word{font-family:'Lora',serif;font-size:18px;font-weight:600;color:var(--text);}
-.filter-row{display:flex;flex-shrink:0;padding:0 20px;overflow-x:auto;
-  scrollbar-width:none;border-bottom:1px solid var(--border);}
+.filter-row{display:flex;flex-shrink:0;padding:10px 16px;gap:6px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border);}
 .filter-row::-webkit-scrollbar{display:none;}
-.ftab{flex-shrink:0;padding:9px 16px;font-size:13px;color:var(--muted);cursor:pointer;
-  white-space:nowrap;border-bottom:2px solid transparent;transition:color .18s,border-color .18s;margin-bottom:-1px;}
-.ftab.active{color:var(--text);font-weight:500;}
-.lang-row{display:flex;align-items:center;justify-content:space-between;
-  padding:8px 20px 9px;flex-shrink:0;border-bottom:1px solid var(--border);}
+.ftab{
+  flex-shrink:0;padding:6px 14px;font-size:12px;color:var(--muted);cursor:pointer;
+  white-space:nowrap;border-radius:99px;border:1px solid var(--border);
+  background:transparent;transition:all .18s;font-family:'DM Sans',sans-serif;
+}
+.ftab.active{color:var(--tab-col,var(--text));border-color:var(--tab-col,var(--border));background:rgba(255,255,255,0.04);font-weight:500;}
+.lang-row{display:flex;align-items:center;justify-content:space-between;padding:8px 20px 9px;flex-shrink:0;border-bottom:1px solid var(--border);}
 .lang-label{font-size:11px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;}
-.toggle-wrap{display:flex;background:var(--surface);border:1px solid var(--border);
-  border-radius:99px;padding:2px;gap:2px;}
-.lang-btn{padding:4px 14px;border-radius:99px;border:none;background:transparent;
-  font-size:12px;font-family:'DM Sans',sans-serif;color:var(--muted);cursor:pointer;transition:all .18s;}
-.lang-btn.active{background:var(--accent);color:#0a1520;font-weight:500;}
-.tab-desc{display:flex;align-items:center;gap:7px;padding:7px 20px 8px;
-  flex-shrink:0;border-bottom:1px solid var(--border);}
+.toggle-wrap{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px;gap:2px;}
+.lang-btn{padding:4px 14px;border-radius:99px;border:none;background:transparent;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--muted);cursor:pointer;transition:all .18s;}
+.lang-btn.active{background:var(--accent);color:#0c0800;font-weight:500;}
+.tab-desc{display:flex;align-items:center;gap:7px;padding:7px 20px 8px;flex-shrink:0;border-bottom:1px solid var(--border);}
 .tab-desc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
 .tab-desc-text{font-size:12px;color:var(--muted);font-weight:300;}
 .graph-wrap{flex:1;position:relative;overflow:hidden;min-height:0;}
 canvas{display:block;touch-action:none;}
-.not-found{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
-  text-align:center;padding:0 32px;}
+.not-found{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;padding:0 32px;}
 .not-found h2{font-family:'Lora',serif;font-size:20px;font-weight:600;margin-bottom:8px;}
 .not-found p{font-size:14px;color:var(--muted);line-height:1.5;}
 .not-found a{display:inline-block;margin-top:20px;font-size:13px;color:var(--accent);text-decoration:none;}
-.sheet{position:absolute;bottom:0;left:0;right:0;background:#161618;
+.sheet{position:absolute;bottom:0;left:0;right:0;background:#161410;
   border-top:1px solid var(--border);border-radius:20px 20px 0 0;
   padding:0 24px 52px;transform:translateY(100%);
   transition:transform .32s cubic-bezier(.32,0,.2,1);z-index:20;overflow-y:auto;scrollbar-width:none;}
 .sheet::-webkit-scrollbar{display:none;}
 .sheet.open{transform:translateY(0);}
 .sheet-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;}
-.sheet-handle-inline{width:36px;height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:12px;}
-.close-btn{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.07);border:none;
+.sheet-handle-inline{width:36px;height:4px;background:rgba(255,255,255,.08);border-radius:2px;margin-top:12px;}
+.close-btn{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.06);border:none;
   cursor:pointer;color:var(--muted);font-size:14px;display:flex;align-items:center;justify-content:center;
   transition:background .15s;margin-top:10px;flex-shrink:0;}
 .close-btn:active{background:rgba(255,255,255,.12);}
@@ -67,11 +62,9 @@ canvas{display:block;touch-action:none;}
 .word-row .word-main{margin-bottom:0;flex:1;min-width:0;}
 .word-main{font-family:'Lora',serif;font-size:clamp(24px,7vw,32px);font-weight:600;color:var(--text);line-height:1.1;margin-bottom:4px;}
 .word-trans{font-family:'Lora',serif;font-style:italic;font-size:14px;color:var(--muted);margin-bottom:12px;}
-.icon-btn{flex-shrink:0;width:34px;height:34px;border-radius:50%;
-  border:1px solid var(--border);background:rgba(255,255,255,.04);
-  cursor:pointer;display:flex;align-items:center;justify-content:center;
-  transition:background .15s;text-decoration:none;}
-.icon-btn:active{background:rgba(255,255,255,.1);}
+.icon-btn{flex-shrink:0;width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:rgba(255,255,255,.03);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s;text-decoration:none;}
+.icon-btn:active{background:rgba(255,255,255,.09);}
 .icon-btn svg{width:15px;height:15px;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .icon-btn.speaker svg{stroke:var(--accent);}
 .icon-btn.link svg{stroke:var(--muted);}
@@ -83,8 +76,8 @@ canvas{display:block;touch-action:none;}
 .divider{height:1px;background:var(--border);margin:0 0 16px;}
 .s-label{font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;}
 .s-def{font-size:15px;color:var(--text);line-height:1.6;margin-bottom:20px;}
-.s-ex{font-family:'Lora',serif;font-style:italic;font-size:15px;color:#b0ada6;line-height:1.6;margin-bottom:8px;}
-.s-ex-note{font-size:11px;color:#4a4540;margin-bottom:16px;}
+.s-ex{font-family:'Lora',serif;font-style:italic;font-size:15px;color:#b0a898;line-height:1.6;margin-bottom:8px;}
+.s-ex-note{font-size:11px;color:#4a4038;margin-bottom:16px;}
 .word-detail-link{display:inline-block;margin-top:4px;font-size:13px;color:var(--accent);text-decoration:none;cursor:pointer;}
 .word-detail-link:hover{text-decoration:underline;}
 .dict-block{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:8px;}
@@ -95,10 +88,8 @@ canvas{display:block;touch-action:none;}
 .dict-defs{padding:0 14px 12px;}
 .dict-def-item{font-size:13px;color:var(--text);line-height:1.5;padding:2px 0;display:flex;gap:6px;}
 .dict-num{color:var(--muted);flex-shrink:0;}
-.dict-src-tag{display:inline;font-size:10px;font-weight:500;color:var(--muted);
-  background:rgba(255,255,255,.05);border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle;}
-.gap-badge{display:flex;align-items:center;gap:6px;background:rgba(186,119,23,0.1);
-  border:1px solid rgba(186,119,23,0.25);border-radius:8px;padding:10px 14px;margin-bottom:10px;}
+.dict-src-tag{display:inline;font-size:10px;font-weight:500;color:var(--muted);background:rgba(255,255,255,.05);border-radius:4px;padding:1px 5px;margin-left:4px;vertical-align:middle;}
+.gap-badge{display:flex;align-items:center;gap:6px;background:rgba(186,119,23,0.1);border:1px solid rgba(186,119,23,0.25);border-radius:8px;padding:10px 14px;margin-bottom:10px;}
 .gap-dot{width:7px;height:7px;border-radius:50%;background:#BA7517;flex-shrink:0;}
 .gap-text{font-size:13px;color:#BA7517;font-weight:600;}
 .gap-sub{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
@@ -174,7 +165,6 @@ canvas{display:block;touch-action:none;}
   <div class="s-label" id="exLabel">Example</div>
   <div class="s-ex"    id="sEx"></div>
   <div class="s-ex-note" id="sExNote" style="display:none">⚠ Approximate — prototype only. Verify with a Cree language expert.</div>
-  <!-- "More about this word" link → word.html -->
   <a class="word-detail-link" id="sDetailLink" href="#" style="display:none">More about this word →</a>
   <div id="sDictSection"></div>
 </div>
@@ -226,10 +216,9 @@ const UI_TEXT = {
 Auth.init();
 Auth.requireAuth();
 
-// ── state ──
 const params   = new URLSearchParams(window.location.search);
 const urlWord  = (params.get('word') || 'cool').toLowerCase();
-const hubData  = getWord(urlWord); // from dict.js
+const hubData  = getWord(urlWord);
 
 let activeFilter   = 'category';
 let lang           = localStorage.getItem('veLang') || 'english';
@@ -237,11 +226,9 @@ let curNodes       = null;
 let animating      = false, raf = null;
 let currentSheetWord = null;
 
-// ── measure canvas ──
 const mCtx = document.createElement('canvas').getContext('2d');
 function measure(text, font){ mCtx.font = font; return mCtx.measureText(text).width; }
 
-// ── label helpers ──
 function primary(w)     { return lang === 'cree' && w.cree ? w.cree : w.eng; }
 function translation(w) { return lang === 'cree' ? w.eng : (w.cree || '—'); }
 
@@ -253,7 +240,6 @@ function spokeRadius(w, W, H){
 function hubRadius(W, H){ return Math.min(W, H) * .145; }
 function setSheetHeight(){ document.getElementById('sheet').style.maxHeight = Math.round(window.innerHeight*.56)+'px'; }
 
-// ── init ──
 if (!hubData) {
   document.getElementById('filterRow').style.display = 'none';
   document.getElementById('notFound').style.display = 'block';
@@ -269,7 +255,6 @@ if (!hubData) {
   if (params.get('open') === '1' && hubData) setTimeout(() => openSheet(hubData), 320);
 }
 
-// ── static UI ──
 function applyStaticUI(){
   const u = UI_TEXT[lang];
   const s = document.getElementById('appSub'); if(s) s.textContent = u.appSub;
@@ -282,9 +267,9 @@ function applyStaticUI(){
 function buildFilters(){
   const labels = UI_TEXT[lang].filters;
   document.getElementById('filterRow').innerHTML = FILTERS.map(f=>`
-    <div class="ftab${f.id===activeFilter?' active':''}"
-         style="${f.id===activeFilter?`border-bottom-color:${TAB_COLOR[f.id]};color:var(--text)`:''}"
-         onclick="selectFilter('${f.id}')">${labels[f.id]||f.label}</div>`).join('');
+    <button class="ftab${f.id===activeFilter?' active':''}"
+         style="${f.id===activeFilter?`--tab-col:${TAB_COLOR[f.id]}`:''}"
+         onclick="selectFilter('${f.id}')">${labels[f.id]||f.label}</button>`).join('');
   updateTabDesc();
 }
 function updateTabDesc(){
@@ -309,11 +294,9 @@ function setLang(l){
   if(sheetOpen && currentSheetWord) openSheet(currentSheetWord);
 }
 
-// ── layout — reads spokes from dict.js ──
 function buildLayout(){
   const cv = document.getElementById('c');
   const W=cv.width, H=cv.height, cx=W/2, cy=H/2;
-  // getSpokes() is from dict.js — returns array of word objects for this filter
   const spokeWords = getSpokes(urlWord, activeFilter);
   const n = spokeWords.length;
   const hR = hubRadius(W, H);
@@ -327,7 +310,6 @@ function buildLayout(){
   return { hub: { ...hubData, x:cx, y:cy, r:hR }, spokes };
 }
 
-// ── draw ──
 function drawScene(nodes, alpha){
   const cv=document.getElementById('c'), ctx=cv.getContext('2d');
   const W=cv.width, H=cv.height, col=TAB_COLOR[activeFilter];
@@ -346,21 +328,21 @@ function drawScene(nodes, alpha){
   spokes.forEach(sp=>{
     const hasVerified=sp.cree&&sp.cree!==null;
     ctx.beginPath(); ctx.arc(sp.x,sp.y,sp.r,0,Math.PI*2);
-    ctx.fillStyle='#18181a'; ctx.fill();
+    ctx.fillStyle='#1a1813'; ctx.fill();
     ctx.strokeStyle=(hasVerified?col:'#444240')+'90'; ctx.lineWidth=0.9; ctx.stroke();
     ctx.textAlign='center'; ctx.textBaseline='middle';
     if(!hasVerified){
       ctx.font=`500 ${spPrimSz}px 'DM Sans',sans-serif`;
-      ctx.fillStyle='#9a9890';
+      ctx.fillStyle='#9a9080';
       ctx.fillText(clip(ctx,sp.eng,sp.r*1.75),sp.x,sp.y);
     } else {
       const prim=primary(sp), trans=translation(sp);
       const primItalic=lang==='cree'&&hasVerified;
-      ctx.fillStyle=hasVerified?'#f0ede6':'#9a9890';
+      ctx.fillStyle=hasVerified?'#f4eddf':'#9a9080';
       ctx.font=`${primItalic?'italic ':''}500 ${spPrimSz}px '${primItalic?'Lora':'DM Sans'}',sans-serif`;
       ctx.fillText(clip(ctx,prim,sp.r*1.75),sp.x,sp.y-sp.r*.2);
       ctx.font=`italic 300 ${spSubSz}px 'Lora',serif`;
-      ctx.fillStyle='#7a7870';
+      ctx.fillStyle='#8c7e6a';
       ctx.fillText(clip(ctx,trans,sp.r*1.75),sp.x,sp.y+sp.r*.3);
     }
   });
@@ -369,15 +351,15 @@ function drawScene(nodes, alpha){
   ctx.beginPath(); ctx.arc(hub.x,hub.y,hub.r+base*.012,0,Math.PI*2);
   ctx.strokeStyle=col+'28'; ctx.lineWidth=1; ctx.stroke();
   ctx.beginPath(); ctx.arc(hub.x,hub.y,hub.r,0,Math.PI*2);
-  ctx.fillStyle='#18181a'; ctx.fill();
+  ctx.fillStyle='#1a1813'; ctx.fill();
   ctx.strokeStyle=col; ctx.lineWidth=2; ctx.stroke();
   ctx.textAlign='center'; ctx.textBaseline='middle';
   const hPrimItalic=lang==='cree'&&hub.cree;
-  ctx.fillStyle='#f0ede6';
+  ctx.fillStyle='#f4eddf';
   ctx.font=`${hPrimItalic?'italic ':''}600 ${hubPrimSz}px 'Lora',serif`;
   ctx.fillText(primary(hub),hub.x,hub.y-hub.r*.18);
   ctx.font=`italic 300 ${hubSubSz}px 'Lora',serif`;
-  ctx.fillStyle='#7a7870';
+  ctx.fillStyle='#8c7e6a';
   ctx.fillText(translation(hub),hub.x,hub.y+hub.r*.28);
   ctx.restore();
 }
@@ -417,7 +399,6 @@ function renderCurrent(doAnim=false){
   }
 }
 
-// ── tap ──
 function hitNode(px,py){
   if(!curNodes) return null;
   const {hub,spokes}=curNodes;
@@ -442,51 +423,37 @@ cv.addEventListener('touchend',  e=>{
 });
 cv.addEventListener('click',e=>{const r=cv.getBoundingClientRect();handleTap(e.clientX-r.left,e.clientY-r.top);});
 
-// ── sheet — reads from dict.js word data ──
 function openSheet(w){
   currentSheetWord = w;
   const u = UI_TEXT[lang];
   const hasDirect = w.cree && w.cree !== null;
   const showCree  = lang === 'cree';
 
-  // ── word + translation — Cree always shown big, English below ──
   document.getElementById('sWord').textContent  = hasDirect ? w.cree : w.eng;
   document.getElementById('sTrans').textContent = hasDirect ? w.eng : '';
-
-  // ── pronunciation ──
   document.getElementById('sPronounc').textContent = w.pronounc || '';
 
-  // ── POS badge ──
   const posCol = POS_COLORS[w.pos] || POS_COLORS[w.posLabel] || '#888';
   const posEl  = document.getElementById('sPos');
   posEl.textContent = w.posLabel || w.pos || '';
   posEl.style.cssText = `background:${posCol}20;color:${posCol};border:1px solid ${posCol}35`;
 
-  // ── itwewina link ──
   const srcEl = document.getElementById('sSrc');
   if(w.src){ srcEl.href=ITWEWINA+'/word/'+w.src+'/'; srcEl.style.display='flex'; }
   else srcEl.style.display='none';
 
-  // ── star / bookmark ──
   const starEl = document.getElementById('sheetStar');
   if(starEl) starEl.classList.toggle('starred', Auth.isBookmarked(w.key));
 
-  // ── definition ──
-  // Always show English definition for general users.
-  // In Cree mode AND word has a direct Cree entry, prepend the itwewina definition too.
   let defText = '';
   const engDef = w.defs ? w.defs.map(d=>d.text).join('; ') : (w.def || '');
   if(showCree && hasDirect && w.defs && w.defs.length){
-    // show itwewina definition (e.g. "it is cold — CW") then the English meaning
     defText = w.defs.map(d=>`${d.text}${d.source?' ['+d.source+']':''}`).join('\n') + '\n\n' + engDef;
   } else {
     defText = engDef;
   }
   document.getElementById('sDef').textContent = defText;
 
-  // ── example ──
-  // In Cree mode show the Cree approximate sentence if available.
-  // Always fall back to English example so the field is never empty.
   const creEx = w.exApprox ? w.exApprox.replace(' [prototype approximation]','') : '';
   const engEx = w.exEng || w.ex || '';
   const rawEx = showCree && hasDirect && creEx ? creEx : engEx;
@@ -494,7 +461,6 @@ function openSheet(w){
   const noteEl = document.getElementById('sExNote');
   if(noteEl) noteEl.style.display = (showCree && hasDirect && creEx) ? '' : 'none';
 
-  // ── "More about this word" — shown for any word that has a full entry ──
   const detailLink = document.getElementById('sDetailLink');
   if(detailLink){
     detailLink.textContent = u.moreAbout;
@@ -502,8 +468,6 @@ function openSheet(w){
     detailLink.style.display = '';
   }
 
-  // ── dict results / semantic gap ──
-  // Only shown when word has no direct Cree equivalent (cree: null)
   const dictSec = document.getElementById('sDictSection');
   if(!hasDirect){
     const results = w.dictResults || [];
@@ -551,7 +515,7 @@ function toggleSheetStar(){
 }
 
 function speakerTap(btn){
-  btn.style.background='rgba(122,164,212,0.2)'; btn.style.transform='scale(0.9)';
+  btn.style.background='rgba(196,138,40,0.2)'; btn.style.transform='scale(0.9)';
   setTimeout(()=>{btn.style.background='';btn.style.transform='';},280);
 }
 

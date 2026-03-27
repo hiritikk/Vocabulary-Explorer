@@ -8,29 +8,32 @@
 <script src="js/auth.js"></script>
 <style>
 :root {
-  --bg:#0e0e0f; --surface:#18181a; --surface2:#222224;
-  --border:rgba(255,255,255,0.07); --border-focus:rgba(122,164,212,0.4);
-  --text:#f0ede6; --muted:#7a7870; --accent:#7aa4d4; --error:#e07a54;
+  --bg:#0f0d0a; --surface:#1a1813; --surface2:#242018;
+  --border:rgba(240,210,140,0.08); --border-focus:rgba(196,138,40,0.45);
+  --text:#f4eddf; --muted:#8c7e6a; --accent:#c48a28; --error:#e07a54;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;}
-body{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  max-width:430px;margin:0 auto;padding:0 28px;min-height:100dvh;}
-
-/* logo */
+body{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  max-width:430px;margin:0 auto;padding:0 28px;min-height:100dvh;
+  background-image:radial-gradient(ellipse 70% 50% at 50% 0%, rgba(196,138,40,0.06) 0%, transparent 70%);
+}
 .logo-wrap{text-align:center;margin-bottom:40px;}
-.logo-sub{font-size:11px;font-weight:300;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;}
-.logo-title{font-family:'Lora',serif;font-size:clamp(26px,7vw,32px);font-weight:600;color:var(--text);line-height:1.2;}
+.logo-rule{display:flex;align-items:center;gap:14px;justify-content:center;margin-bottom:12px;}
+.logo-rule-line{flex:1;max-width:40px;height:1px;background:rgba(196,138,40,0.3);}
+.logo-sub{font-size:11px;font-weight:300;color:var(--accent);letter-spacing:.18em;text-transform:uppercase;opacity:.8;}
+.logo-title{font-family:'Lora',serif;font-size:clamp(28px,7vw,34px);font-weight:600;color:var(--text);line-height:1.2;margin-top:2px;}
 .logo-title span{color:var(--accent);}
-
-/* card */
-.card{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:28px 24px;}
-.card-title{font-size:18px;font-weight:500;color:var(--text);margin-bottom:4px;}
-.card-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
-
-/* form */
+.card{
+  width:100%;background:var(--surface);
+  border:1px solid var(--border);border-radius:20px;padding:28px 24px;
+  box-shadow:0 1px 0 rgba(240,210,140,0.04) inset, 0 24px 48px rgba(0,0,0,0.4);
+}
+.card-title{font-size:17px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.card-sub{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.5;}
 .field{margin-bottom:16px;}
-.field label{display:block;font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.04em;margin-bottom:6px;text-transform:uppercase;}
+.field label{display:block;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em;margin-bottom:6px;text-transform:uppercase;}
 .field input{
   width:100%;padding:13px 16px;border-radius:12px;border:1px solid var(--border);
   background:var(--surface2);font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text);
@@ -38,41 +41,31 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
 }
 .field input::placeholder{color:var(--muted);}
 .field input:focus{border-color:var(--border-focus);}
-
-/* error */
 .err-msg{
   font-size:13px;color:var(--error);background:rgba(224,122,84,0.08);
   border:1px solid rgba(224,122,84,0.2);border-radius:10px;
   padding:10px 14px;margin-bottom:16px;display:none;
 }
 .err-msg.show{display:block;}
-
-/* success toast */
 .toast{
   position:fixed;bottom:36px;left:50%;transform:translateX(-50%) translateY(20px);
-  background:var(--surface2);border:1px solid rgba(122,164,212,0.3);
+  background:var(--surface2);border:1px solid rgba(196,138,40,0.3);
   border-radius:12px;padding:12px 20px;font-size:14px;color:var(--accent);
   white-space:nowrap;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none;z-index:99;
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-/* primary button */
 .btn-primary{
   width:100%;padding:14px;border-radius:12px;border:none;
-  background:var(--accent);color:#0a1520;font-family:'DM Sans',sans-serif;
-  font-size:15px;font-weight:500;cursor:pointer;transition:opacity .15s;
+  background:var(--accent);color:#0c0800;font-family:'DM Sans',sans-serif;
+  font-size:15px;font-weight:500;cursor:pointer;transition:opacity .15s, transform .1s;
 }
-.btn-primary:active{opacity:.8;}
-.btn-primary:disabled{opacity:.5;cursor:not-allowed;}
-
-/* links row */
+.btn-primary:active{opacity:.85;transform:scale(0.99);}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed;}
 .links-row{display:flex;justify-content:space-between;align-items:center;margin-top:20px;}
 .text-link{font-size:13px;color:var(--accent);background:none;border:none;cursor:pointer;
-  font-family:'DM Sans',sans-serif;padding:0;text-decoration:none;}
-.text-link:hover{text-decoration:underline;}
+  font-family:'DM Sans',sans-serif;padding:0;text-decoration:none;opacity:.8;}
+.text-link:hover{opacity:1;text-decoration:underline;}
 .links-center{width:100%;text-align:center;margin-top:20px;}
-
-/* view switching */
 .view{display:none;}
 .view.active{display:block;}
 </style>
@@ -80,11 +73,14 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
 <body>
 
 <div class="logo-wrap">
-  <div class="logo-sub">nêhiyawêwin</div>
+  <div class="logo-rule">
+    <div class="logo-rule-line"></div>
+    <div class="logo-sub">nêhiyawêwin</div>
+    <div class="logo-rule-line"></div>
+  </div>
   <div class="logo-title">Vocabulary <span>Explorer</span></div>
 </div>
 
-<!-- LOGIN VIEW -->
 <div class="view active" id="viewLogin">
   <div class="card">
     <div class="card-title">Welcome back</div>
@@ -106,7 +102,6 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
   </div>
 </div>
 
-<!-- REGISTER VIEW -->
 <div class="view" id="viewRegister">
   <div class="card">
     <div class="card-title">Create account</div>
@@ -131,7 +126,6 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
   </div>
 </div>
 
-<!-- FORGOT PASSWORD VIEW -->
 <div class="view" id="viewForgot">
   <div class="card">
     <div class="card-title">Reset password</div>
@@ -151,63 +145,39 @@ body{display:flex;flex-direction:column;align-items:center;justify-content:cente
 <div class="toast" id="toast"></div>
 
 <script>
-// If already logged in, skip straight to app
 Auth.init();
 if (Auth.getSession()) window.location.replace('index.html');
 
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  // clear errors
   document.querySelectorAll('.err-msg').forEach(e => { e.classList.remove('show'); e.textContent = ''; });
 }
-
-function showErr(id, msg) {
-  const el = document.getElementById(id);
-  el.textContent = msg;
-  el.classList.add('show');
-}
-
+function showErr(id, msg) { const el = document.getElementById(id); el.textContent = msg; el.classList.add('show'); }
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 3000);
 }
-
 function doLogin() {
   const email = document.getElementById('loginEmail').value.trim();
   const pass  = document.getElementById('loginPass').value;
   if (!email || !pass) { showErr('loginErr', 'Please fill in all fields.'); return; }
   const res = Auth.login(email, pass);
-  if (res.ok) {
-    window.location.replace('index.html');
-  } else {
-    showErr('loginErr', res.error);
-  }
+  if (res.ok) { window.location.replace('index.html'); } else { showErr('loginErr', res.error); }
 }
-
 function doRegister() {
-  const email   = document.getElementById('regEmail').value.trim();
-  const pass    = document.getElementById('regPass').value;
+  const email = document.getElementById('regEmail').value.trim();
+  const pass  = document.getElementById('regPass').value;
   const confirm = document.getElementById('regConfirm').value;
   if (!email || !pass || !confirm) { showErr('regErr', 'Please fill in all fields.'); return; }
   if (pass !== confirm) { showErr('regErr', 'Passwords do not match.'); return; }
   const res = Auth.register(email, pass);
-  if (res.ok) {
-    window.location.replace('index.html');
-  } else {
-    showErr('regErr', res.error);
-  }
+  if (res.ok) { window.location.replace('index.html'); } else { showErr('regErr', res.error); }
 }
-
 function doForgot() {
   const email = document.getElementById('forgotEmail').value.trim();
   if (!email) { showErr('forgotErr', 'Please enter your email address.'); return; }
-  if (!email.toLowerCase().endsWith('@ualberta.ca')) {
-    showErr('forgotErr', 'Only @ualberta.ca email addresses are supported.');
-    return;
-  }
+  if (!email.toLowerCase().endsWith('@ualberta.ca')) { showErr('forgotErr', 'Only @ualberta.ca email addresses are supported.'); return; }
   showToast('Reset link sent — check your inbox.');
   document.getElementById('forgotEmail').value = '';
 }
