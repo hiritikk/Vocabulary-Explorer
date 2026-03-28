@@ -308,10 +308,28 @@ function setScript(s){
   if(sylEl) sylEl.classList.toggle('show',s==='syllabics');
   if(creEl) creEl.style.display=s==='syllabics'?'none':'';
 }
-function speakerTap(btn){
-  btn.style.background='rgba(193,127,36,0.2)'; btn.style.transform='scale(0.9)';
-  setTimeout(()=>{btn.style.background='';btn.style.transform='';},280);
+async function playAudio(creeWord, btn) {
+  if (!creeWord) return;
+  btn.style.transform = 'scale(0.9)';
+  btn.style.opacity = '0.6';
+  const dbs = ['maskwacis', 'moswacihk'];
+  let url = null;
+  for (const db of dbs) {
+    try {
+      const res = await fetch(`https://speech-db.altlab.app/${db}/api/bulk_search?q=${encodeURIComponent(creeWord)}&exact=true`);
+      const data = await res.json();
+      const recordings = data.matched_recordings || [];
+      const best = recordings.find(r => r.is_best) || recordings[0];
+      if (best) { url = best.recording_url; break; }
+    } catch(e) {}
+  }
+  btn.style.transform = '';
+  btn.style.opacity = '';
+  btn.style.background = 'rgba(193,127,36,0.2)';
+  setTimeout(() => btn.style.background = '', 400);
+  if (url) new Audio(url).play().catch(() => {});
 }
+function speakerTap(btn){ playAudio(w ? w.cree : '', btn); }
 </script>
 </body>
 </html>
