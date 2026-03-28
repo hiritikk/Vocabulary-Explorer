@@ -26,6 +26,7 @@ const DICT = {
     // pimohcêw — confirmed itwêwina VAI-1
     // "s/he walks a bit, s/he walks along, s/he goes along" — CW
     cree:      'pimohcêw',
+    audioQuery:'pimohtêw',
     syllabics: 'ᐱᒧᐦᒉᐤ',
     pronounc:  '/pɪˈmoːhtʃeːw/',
     pos:       'VAI-1',

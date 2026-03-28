@@ -535,7 +535,7 @@ async function playAudio(creeWord, btn) {
   setTimeout(() => btn.style.background = '', 400);
   if (url) new Audio(url).play().catch(() => {});
 }
-function speakerTap(btn){ playAudio(currentSheetWord ? currentSheetWord.cree : '', btn); }
+function speakerTap(btn){ playAudio(currentSheetWord ? (currentSheetWord.audioQuery || currentSheetWord.cree) : '', btn); }
 
 let shty=0;
 const sh=document.getElementById('sheet');

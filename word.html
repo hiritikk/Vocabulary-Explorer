@@ -329,7 +329,7 @@ async function playAudio(creeWord, btn) {
   setTimeout(() => btn.style.background = '', 400);
   if (url) new Audio(url).play().catch(() => {});
 }
-function speakerTap(btn){ playAudio(w ? w.cree : '', btn); }
+function speakerTap(btn){ playAudio(w ? (w.audioQuery || w.cree) : '', btn); }
 </script>
 </body>
 </html>
