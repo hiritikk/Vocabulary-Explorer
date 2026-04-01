@@ -97,9 +97,9 @@ const DICT = {
     posNote:   'Adjective in English — verb in Cree',
     posWarning: true,
     defs: [
-      { text: 'it is cold', source: 'CW' },
+      { text: 'it is cold, it is cool', source: 'CW' },
     ],
-    exApprox:  'tahkâyâw. — It is cold.',
+    exApprox:  'tahkâyâw. — It is cold, it is cool.',
     approx:    true,
     grammarNote: `VII means Verb, Inanimate, Intransitive. It describes a state of the environment — weather, temperature, physical conditions — and in Cree it is a verb, not an adjective. There is no Cree equivalent of "the weather is cool." Instead you say the verb directly: tahkâyâw.`,
     grammarHighlight: `In English, "cool" is an adjective that describes something. In Plains Cree, tahkâyâw is a verb — it performs an action. This reflects a genuinely different way of understanding the world. Weather, colours, and many physical states are not descriptions in Cree. They are events.`,
