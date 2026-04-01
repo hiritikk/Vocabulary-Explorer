@@ -170,8 +170,9 @@ body.searching .toggle-wrap{display:none;}
   font-size:12px;font-weight:500;color:var(--accent);
   padding:6px 12px;border-radius:99px;
   background:rgba(193,127,36,0.1);border:1px solid rgba(193,127,36,0.25);
-  transition:background .15s;pointer-events:none;
+  transition:background .15s;cursor:pointer;
 }
+.rc-explore:active{background:rgba(193,127,36,0.2);}
 .rc-explore svg{width:12px;height:12px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 
 /* NO RESULTS */
@@ -373,10 +374,10 @@ function renderCard(creeWord, pos, posLabel, def, sources, hubKey, idx) {
   const displayWord = creeWord || hubKey;
   const srcs = sources.filter(Boolean).map(s=>`<span class="rc-src">${s}</span>`).join('');
   const starred = Auth.isBookmarked(hubKey);
-  const clickAction = idx >= 2
+  const exploreAction = idx >= 2
     ? `document.getElementById('wipOverlay').classList.remove('hidden')`
     : `window.location.href='explorer.html?word=${encodeURIComponent(hubKey)}'`;
-  return `<div class="result-card" onclick="${clickAction}">
+  return `<div class="result-card">
   <div class="rc-header">
     <div class="${wordClass}">${displayWord}</div>
     <span class="${posClass(pos)}">${pos}</span>
@@ -384,8 +385,8 @@ function renderCard(creeWord, pos, posLabel, def, sources, hubKey, idx) {
   <div class="rc-pos-label">${posLabel}</div>
   <div class="rc-def">${def}${srcs}</div>
   <div class="rc-footer">
-    <button class="rc-bookmark${starred?' starred':''}" title="Save word" onclick="event.stopPropagation();toggleBookmark('${hubKey}',this)">${STAR_ICON}</button>
-    <span class="rc-explore">${EXPLORE_ICON} Explore in graph</span>
+    <button class="rc-bookmark${starred?' starred':''}" title="Save word" onclick="toggleBookmark('${hubKey}',this)">${STAR_ICON}</button>
+    <span class="rc-explore" onclick="${exploreAction}">${EXPLORE_ICON} Explore in graph</span>
   </div>
 </div>`;
 }
