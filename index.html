@@ -19,6 +19,12 @@ body{
   max-width:430px;margin:0 auto;padding:0 28px;min-height:100dvh;
   background-image:radial-gradient(ellipse 90% 55% at 50% 0%, rgba(193,127,36,0.07) 0%, transparent 70%);
 }
+body.searching{
+  justify-content:flex-start;
+  padding-top:76px;
+}
+
+/* TOP BAR */
 .top-bar{
   position:fixed;top:0;left:50%;transform:translateX(-50%);
   width:100%;max-width:430px;
@@ -32,19 +38,17 @@ body{
 }
 .nav-btn:active{background:var(--surface2);}
 .nav-btn svg{width:14px;height:14px;fill:none;stroke:var(--muted);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
-.drop-star{
-  flex-shrink:0;width:28px;height:28px;border-radius:8px;
-  background:transparent;border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:background .15s,border-color .15s;
-}
-.drop-star:active{background:rgba(193,127,36,0.12);}
-.drop-star svg{width:13px;height:13px;fill:none;stroke:var(--muted);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:fill .15s,stroke .15s;}
-.drop-star.starred svg{fill:var(--accent);stroke:var(--accent);}
 .toggle-wrap{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:2px;gap:2px;}
 .lang-btn{padding:5px 14px;border-radius:99px;border:none;background:transparent;font-size:12px;font-family:'DM Sans',sans-serif;color:var(--muted);cursor:pointer;transition:all .18s;}
 .lang-btn.active{background:var(--accent);color:#0c0800;font-weight:500;}
-.logo-wrap{text-align:center;margin-bottom:44px;position:relative;overflow:hidden;}
+
+/* HERO */
+.logo-wrap{
+  text-align:center;margin-bottom:44px;position:relative;overflow:hidden;
+  transition:opacity 0.2s, max-height 0.3s, margin-bottom 0.3s;
+  max-height:300px;
+}
+.logo-wrap.hidden{opacity:0;max-height:0;margin-bottom:0;pointer-events:none;}
 .logo-watermark{
   position:absolute;top:50%;left:50%;transform:translate(-50%,-54%);
   font-size:96px;color:var(--accent);opacity:0.055;pointer-events:none;
@@ -52,23 +56,23 @@ body{
 }
 .logo-sub{
   font-size:11px;font-weight:300;color:var(--accent);letter-spacing:.18em;text-transform:uppercase;margin-bottom:12px;opacity:.8;
-  display:flex;align-items:center;justify-content:center;gap:12px;
-  position:relative;z-index:1;
+  display:flex;align-items:center;justify-content:center;gap:12px;position:relative;z-index:1;
 }
 .logo-sub::before,.logo-sub::after{content:'';display:block;width:28px;height:1px;background:rgba(193,127,36,0.35);}
 .logo-title{font-family:'Lora',serif;font-size:clamp(32px,9vw,42px);font-weight:600;color:var(--text);line-height:1.15;position:relative;z-index:1;}
 .logo-title span{color:var(--accent);}
+
+/* SEARCH */
 .search-outer{width:100%;position:relative;}
 .search-wrap{width:100%;position:relative;}
 .search-input{
   width:100%;padding:15px 100px 15px 18px;border-radius:14px;
   border:1px solid var(--border);background:var(--surface);
   font-family:'DM Sans',sans-serif;font-size:16px;color:var(--text);
-  outline:none;transition:border-color .2s,border-radius .15s;-webkit-appearance:none;
+  outline:none;transition:border-color .2s;-webkit-appearance:none;
 }
 .search-input::placeholder{color:var(--muted);}
 .search-input:focus{border-color:rgba(193,127,36,0.4);}
-.search-input.open{border-radius:14px 14px 0 0;border-bottom-color:transparent;}
 .search-btns{position:absolute;right:8px;top:50%;transform:translateY(-50%);display:flex;align-items:center;gap:4px;}
 .search-btn{width:36px;height:36px;border-radius:10px;background:var(--accent);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:opacity .15s;}
 .search-btn:active{opacity:.75;}
@@ -78,33 +82,101 @@ body{
 .mic-btn.listening{background:rgba(224,122,84,0.15);border-color:rgba(224,122,84,0.4);}
 .mic-btn svg{width:15px;height:15px;fill:none;stroke:var(--muted);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
 .mic-btn.listening svg{stroke:#e07a54;}
-.dropdown{
-  display:none;position:absolute;top:100%;left:0;right:0;
-  background:var(--surface);border:1px solid rgba(193,127,36,0.35);border-top:none;
-  border-radius:0 0 14px 14px;z-index:20;max-height:260px;overflow-y:auto;scrollbar-width:none;
+
+/* HINT */
+.hint{
+  margin-top:14px;font-size:12px;color:var(--muted);text-align:center;
+  transition:opacity 0.15s, max-height 0.2s, margin-top 0.2s;
+  max-height:40px;overflow:hidden;
 }
-.dropdown::-webkit-scrollbar{display:none;}
-.dropdown.visible{display:block;}
-.drop-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .12s;}
-.drop-item:last-child{border-bottom:none;}
-.drop-item:hover,.drop-item.focused{background:rgba(193,127,36,0.05);}
-.drop-primary{font-size:15px;font-weight:500;color:var(--text);flex:1;min-width:0;}
-.drop-primary em{font-style:normal;color:var(--accent);}
-.drop-secondary{font-family:'Lora',serif;font-style:italic;font-size:12px;color:var(--muted);flex-shrink:0;}
-.drop-tag{font-size:10px;font-weight:500;letter-spacing:.05em;padding:2px 7px;border-radius:99px;background:rgba(193,127,36,0.12);color:var(--accent);flex-shrink:0;}
-.drop-connect{
-  flex-shrink:0;width:28px;height:28px;border-radius:8px;
-  background:transparent;border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;transition:background .15s,border-color .15s;color:var(--muted);
-}
-.drop-connect:hover{background:rgba(193,127,36,0.12);border-color:rgba(193,127,36,0.3);color:var(--accent);}
-.drop-connect svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;}
-.drop-divider{padding:6px 16px 4px;font-size:10px;font-weight:500;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid var(--border);}
-.drop-empty{padding:16px;font-size:13px;color:var(--muted);text-align:center;}
-.hint{margin-top:14px;font-size:12px;color:var(--muted);text-align:center;}
+.hint.hidden{opacity:0;max-height:0;margin-top:0;}
 .hint span{color:rgba(193,127,36,0.7);cursor:pointer;transition:color .15s;}
 .hint span:hover{color:var(--accent);}
+
+/* RESULTS SECTION */
+.results-section{
+  width:100%;margin-top:16px;
+  display:none;
+  padding-bottom:32px;
+}
+
+.results-meta{
+  font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:12px;padding-left:2px;
+}
+.results-meta strong{color:rgba(193,127,36,0.75);font-weight:500;font-style:normal;}
+
+/* RESULT CARD */
+.result-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px 16px 14px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:border-color .15s, background .15s;
+  display:block;
+  text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.result-card:active{
+  border-color:rgba(193,127,36,0.35);
+  background:var(--surface2);
+}
+.rc-header{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  margin-bottom:3px;
+}
+.rc-cree{
+  font-family:'Lora',serif;font-size:22px;font-weight:600;
+  color:var(--accent);line-height:1.2;
+}
+.rc-no-cree{
+  font-family:'DM Sans',sans-serif;font-size:20px;font-weight:500;
+  color:var(--text);line-height:1.2;
+}
+.rc-pos{
+  flex-shrink:0;font-size:10px;font-weight:500;letter-spacing:.05em;
+  padding:3px 8px;border-radius:99px;margin-top:5px;
+  background:rgba(193,127,36,0.1);color:var(--accent);
+  border:1px solid rgba(193,127,36,0.2);
+  white-space:nowrap;
+}
+.rc-pos-verb{background:rgba(224,122,84,0.1);color:#e07a54;border-color:rgba(224,122,84,0.2);}
+.rc-pos-noun{background:rgba(200,169,110,0.1);color:#c8a96e;border-color:rgba(200,169,110,0.2);}
+.rc-pos-label{font-size:11px;color:var(--muted);margin-bottom:9px;}
+.rc-def{font-size:14px;color:var(--text);line-height:1.5;margin-bottom:12px;}
+.rc-src{
+  font-size:10px;color:var(--muted);font-weight:500;letter-spacing:.05em;
+  background:rgba(255,255,255,0.05);padding:1px 5px;border-radius:4px;
+  margin-left:3px;vertical-align:middle;
+}
+.rc-footer{
+  display:flex;align-items:center;justify-content:space-between;
+  padding-top:10px;border-top:1px solid var(--border);
+}
+.rc-bookmark{
+  width:28px;height:28px;border-radius:8px;
+  background:transparent;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  transition:background .15s,border-color .15s;flex-shrink:0;
+}
+.rc-bookmark:active{background:rgba(193,127,36,0.12);}
+.rc-bookmark svg{width:13px;height:13px;fill:none;stroke:var(--muted);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:fill .15s,stroke .15s;}
+.rc-bookmark.starred svg{fill:var(--accent);stroke:var(--accent);}
+.rc-explore{
+  display:flex;align-items:center;gap:5px;
+  font-size:12px;font-weight:500;color:var(--accent);
+  padding:6px 12px;border-radius:99px;
+  background:rgba(193,127,36,0.1);border:1px solid rgba(193,127,36,0.25);
+  transition:background .15s;pointer-events:none;
+}
+.rc-explore svg{width:12px;height:12px;fill:none;stroke:var(--accent);stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* NO RESULTS */
+.no-results{
+  text-align:center;padding:40px 0;font-size:13px;color:var(--muted);
+}
 </style>
 </head>
 <body>
@@ -124,7 +196,7 @@ body{
   </div>
 </div>
 
-<div class="logo-wrap">
+<div class="logo-wrap" id="logoWrap">
   <div class="logo-watermark" aria-hidden="true">ᓀᐦᐃᔭᐍᐏᐣ</div>
   <div class="logo-sub" id="logoSub">nêhiyawêwin</div>
   <div class="logo-title" id="logoTitle">Vocabulary<br><span id="logoSpan">Explorer</span></div>
@@ -134,7 +206,7 @@ body{
   <div class="search-wrap">
     <input class="search-input" id="searchInput" type="text"
       autocomplete="off" autocorrect="off" spellcheck="false"
-      oninput="onInput()" onkeydown="onKeyDown(event)" onfocus="onInputFocus()">
+      oninput="onInput()" onkeydown="onKeyDown(event)">
     <div class="search-btns">
       <button class="mic-btn" id="micBtn" onclick="micTap()" title="Search by voice">
         <svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="19" x2="12" y2="22"/><line x1="8" y1="22" x2="16" y2="22"/></svg>
@@ -144,10 +216,14 @@ body{
       </button>
     </div>
   </div>
-  <div class="dropdown" id="dropdown"></div>
 </div>
 
 <div class="hint" id="hintText"></div>
+
+<div class="results-section" id="resultsSection">
+  <div class="results-meta" id="resultsMeta"></div>
+  <div id="resultsList"></div>
+</div>
 
 <script>
 Auth.init();
@@ -155,121 +231,208 @@ Auth.requireAuth();
 
 const UI = {
   english: {
-    sub: 'nêhiyawêwin', title: 'Vocabulary', span: 'Explorer',
-    placeholder: 'Search a word…', hint: 'Try',
-    hintWords: ['cool', 'walk', 'bear'],
-    noResults: 'No results. Try spelling it differently.',
+    sub:'nêhiyawêwin', title:'Vocabulary', span:'Explorer',
+    placeholder:'Search a word…', hint:'Try',
+    hintWords:['cool','walk','bear'],
+    noResults:'No results found. Try a different spelling.',
+    resultsFor:'results for',
   },
   cree: {
-    sub: 'Plains Cree Dictionary', title: 'itwêwina', span: 'kâ-nisitohtahk',
-    placeholder: 'mâhkiya pîkiskwêwin…', hint: 'mâmitonêyihtamok',
-    hintWords: ['tahkâyâw', 'pimohcêw', 'maskwa'],
-    noResults: 'namôya kiskêyihtâkwan. isi-mâhkiya.',
+    sub:'Plains Cree Dictionary', title:'itwêwina', span:'kâ-nisitohtahk',
+    placeholder:'mâhkiya pîkiskwêwin…', hint:'mâmitonêyihtamok',
+    hintWords:['tahkâyâw','pimohcêw','maskwa'],
+    noResults:'namôya kiskêyihtâkwan. isi-mâhkiya.',
+    resultsFor:'results for',
   },
 };
-const CREE_HINT_KEYS = { 'tahkâyâw': 'cool', 'pimohcêw': 'walk', 'maskwa': 'bear' };
+const CREE_HINT_KEYS = { 'tahkâyâw':'cool', 'pimohcêw':'walk', 'maskwa':'bear' };
+
+/* ── Rich results hardcoded from itwêwina (altlab.app) ── */
+const RICH_RESULTS = {
+  cool: {
+    hubKey:'cool',
+    results:[
+      { cree:'tahkâyâw',          pos:'VII-2v', posLabel:'verb — inanimate intransitive', def:'it is cold',                           sources:['CW'] },
+      { cree:'tahkisiw',          pos:'VAI-1',  posLabel:'verb — animate intransitive',   def:'s/he is cold, s/he is cool',            sources:['CW'] },
+      { cree:'tahkâw',            pos:'VII-2v', posLabel:'verb — inanimate intransitive', def:'it is cool, it is cold (to the touch)', sources:['CW','MD'] },
+      { cree:'tahkâyâsin',        pos:'VII-1n', posLabel:'verb — inanimate intransitive', def:'it is cool weather',                   sources:['CW'] },
+    ]
+  },
+  walk: {
+    hubKey:'walk',
+    results:[
+      { cree:'pimohtêw',          pos:'VAI-1',  posLabel:'verb — animate intransitive',   def:'s/he walks, s/he walks along',          sources:['CW','MD'] },
+      { cree:'papâmohtêw',        pos:'VAI-1',  posLabel:'verb — animate intransitive',   def:'s/he wanders, s/he walks around',       sources:['CW'] },
+      { cree:'pimohtêwin',        pos:'NI-1',   posLabel:'noun — inanimate',              def:'walk, stroll, walking; sidewalk',        sources:['CW','MD'] },
+      { cree:'pwâstawohtêw',      pos:'VAI-1',  posLabel:'verb — animate intransitive',   def:'s/he walks slowly',                     sources:['CW'] },
+    ]
+  },
+  bear: {
+    hubKey:'bear',
+    results:[
+      { cree:'maskwa',            pos:'NA-4w',  posLabel:'noun — animate',                def:'bear, black bear',                       sources:['CW'] },
+      { cree:'kaskitêwi-maskwa',  pos:'NA-4w',  posLabel:'noun — animate',                def:'black bear',                             sources:['CW'] },
+      { cree:'maskosis',          pos:'NA-1',   posLabel:'noun — animate',                def:'little bear, bear cub',                  sources:['CW','MD'] },
+      { cree:'okistatowân',       pos:'NA-1',   posLabel:'noun — animate',                def:'grizzly bear',                           sources:['CW','AECD'] },
+    ]
+  },
+};
+
 let lang = localStorage.getItem('veLang') || 'english';
-let focusedIdx = -1;
-let currentResults = [];
 
 function setLang(l) {
-  lang = l; localStorage.setItem('veLang', l); applyUI(); closeDropdown();
+  lang = l; localStorage.setItem('veLang', l);
+  applyUI();
   document.getElementById('searchInput').value = '';
+  clearResults();
 }
 function applyUI() {
   const u = UI[lang];
-  document.getElementById('btnEng').classList.toggle('active', lang === 'english');
-  document.getElementById('btnCree').classList.toggle('active', lang === 'cree');
+  document.getElementById('btnEng').classList.toggle('active', lang==='english');
+  document.getElementById('btnCree').classList.toggle('active', lang==='cree');
   document.getElementById('logoSub').textContent = u.sub;
   document.getElementById('logoTitle').innerHTML = `${u.title}<br><span style="color:var(--accent)">${u.span}</span>`;
   document.getElementById('searchInput').placeholder = u.placeholder;
-  document.getElementById('hintText').innerHTML = u.hint + ' ' + u.hintWords.map(w => `<span onclick="goWord('${w}')">${w}</span>`).join(', ');
+  document.getElementById('hintText').innerHTML = u.hint+' '+u.hintWords.map(w=>`<span onclick="goWord('${w}')">${w}</span>`).join(', ');
 }
-function goWord(w) { const key = CREE_HINT_KEYS[w] || w.toLowerCase(); window.location.href = `explorer.html?word=${encodeURIComponent(key)}`; }
-function goSearch() {
-  const q = document.getElementById('searchInput').value.trim(); if (!q) return;
-  const res = searchDict(q); if (res[0]) window.location.href = `explorer.html?word=${encodeURIComponent(res[0].key)}`;
-}
-function goResult(word) { window.location.href = `explorer.html?word=${encodeURIComponent(word.key)}`; }
 
 function norm(s) {
-  return s.toLowerCase().replace(/[âā]/g,'a').replace(/[êē]/g,'e').replace(/[îī]/g,'i').replace(/[ôō]/g,'o').replace(/[ýÿ]/g,'y');
+  return s.toLowerCase().replace(/[âā]/g,'a').replace(/[êē]/g,'e').replace(/[îī]/g,'i').replace(/[ôō]/g,'o');
 }
-function highlight(text, q) {
-  if (!q) return text;
-  const idx = norm(text).indexOf(norm(q)); if (idx < 0) return text;
-  return text.slice(0,idx)+'<em>'+text.slice(idx,idx+q.length)+'</em>'+text.slice(idx+q.length);
+
+function goWord(w) {
+  document.getElementById('searchInput').value = w;
+  onInput();
 }
-function scoreFn(w, nq) {
-  const ne=norm(w.eng), nc=w.cree?norm(w.cree):'';
-  if(ne===nq||nc===nq) return 0; if(ne.startsWith(nq)||nc.startsWith(nq)) return 1;
-  if(ne.includes(nq)||nc.includes(nq)) return 2; return 99;
+
+function goSearch() {
+  const q = document.getElementById('searchInput').value.trim();
+  if (q) onInput();
 }
+
+function onKeyDown(e) {
+  if (e.key==='Enter') { e.preventDefault(); goSearch(); }
+  else if (e.key==='Escape') { document.getElementById('searchInput').value=''; clearResults(); }
+}
+
+function getRichMatch(q) {
+  const nq = norm(q);
+  // direct English key match
+  if (RICH_RESULTS[nq]) return RICH_RESULTS[nq];
+  // cree word → English key
+  for (const [creeTerm, engKey] of Object.entries(CREE_HINT_KEYS)) {
+    if (norm(creeTerm)===nq) return RICH_RESULTS[engKey];
+  }
+  return null;
+}
+
 function searchDict(q) {
-  if (!q||q.length<1) return [];
-  const nq=norm(q);
-  return Object.values(DICT).map(w=>({w,s:scoreFn(w,nq)})).filter(x=>x.s<99)
-    .sort((a,b)=>a.s-b.s||a.w.eng.localeCompare(b.w.eng)).map(x=>x.w);
+  if (!q) return [];
+  const nq = norm(q);
+  function score(w) {
+    const ne=norm(w.eng), nc=w.cree?norm(w.cree):'';
+    if(ne===nq||nc===nq) return 0;
+    if(ne.startsWith(nq)||nc.startsWith(nq)) return 1;
+    if(ne.includes(nq)||nc.includes(nq)) return 2;
+    return 99;
+  }
+  return Object.values(DICT).map(w=>({w,s:score(w)})).filter(x=>x.s<99)
+    .sort((a,b)=>a.s-b.s||a.w.eng.localeCompare(b.w.eng)).map(x=>x.w).slice(0,5);
+}
+
+function posClass(pos) {
+  if (!pos) return 'rc-pos';
+  if (pos.startsWith('VA')||pos.startsWith('VII')||pos.startsWith('VT')||pos==='verb') return 'rc-pos rc-pos-verb';
+  if (pos.startsWith('NA')||pos.startsWith('NI')||pos==='noun') return 'rc-pos rc-pos-noun';
+  return 'rc-pos';
+}
+
+const EXPLORE_ICON = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><circle cx="12" cy="4" r="1.8"/><circle cx="20" cy="12" r="1.8"/><circle cx="12" cy="20" r="1.8"/><circle cx="4" cy="12" r="1.8"/><line x1="12" y1="6" x2="12" y2="9.5"/><line x1="17.8" y1="12" x2="14.5" y2="12"/><line x1="12" y1="14.5" x2="12" y2="18"/><line x1="6.2" y1="12" x2="9.5" y2="12"/></svg>`;
+const STAR_ICON = `<svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+function renderCard(creeWord, pos, posLabel, def, sources, hubKey) {
+  const wordClass = creeWord ? 'rc-cree' : 'rc-no-cree';
+  const displayWord = creeWord || hubKey;
+  const srcs = sources.filter(Boolean).map(s=>`<span class="rc-src">${s}</span>`).join('');
+  const starred = Auth.isBookmarked(hubKey);
+  return `<div class="result-card" onclick="window.location.href='explorer.html?word=${encodeURIComponent(hubKey)}'">
+  <div class="rc-header">
+    <div class="${wordClass}">${displayWord}</div>
+    <span class="${posClass(pos)}">${pos}</span>
+  </div>
+  <div class="rc-pos-label">${posLabel}</div>
+  <div class="rc-def">${def}${srcs}</div>
+  <div class="rc-footer">
+    <button class="rc-bookmark${starred?' starred':''}" title="Save word" onclick="event.stopPropagation();toggleBookmark('${hubKey}',this)">${STAR_ICON}</button>
+    <span class="rc-explore">${EXPLORE_ICON} Explore in graph</span>
+  </div>
+</div>`;
+}
+
+function toggleBookmark(key, btn) {
+  Auth.toggleBookmark(key);
+  btn.classList.toggle('starred', Auth.isBookmarked(key));
 }
 
 function onInput() {
-  const q=document.getElementById('searchInput').value.trim(); focusedIdx=-1;
-  if(!q){closeDropdown();return;} currentResults=searchDict(q); renderDropdown(q);
-}
-function onInputFocus() { const q=document.getElementById('searchInput').value.trim(); if(q&&currentResults.length) renderDropdown(q); }
+  const q = document.getElementById('searchInput').value.trim();
+  if (!q) { clearResults(); return; }
 
-const CONNECT_ICON = `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="2.5"/><circle cx="12" cy="4" r="1.8"/><circle cx="20" cy="12" r="1.8"/><circle cx="12" cy="20" r="1.8"/><circle cx="4" cy="12" r="1.8"/><line x1="12" y1="6" x2="12" y2="9.5"/><line x1="17.8" y1="12" x2="14.5" y2="12"/><line x1="12" y1="14.5" x2="12" y2="18"/><line x1="6.2" y1="12" x2="9.5" y2="12"/></svg>`;
-const STAR_ICON = `<svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const rich = getRichMatch(q);
+  if (rich) {
+    let html = '';
+    rich.results.forEach(r => { html += renderCard(r.cree, r.pos, r.posLabel, r.def, r.sources, rich.hubKey); });
+    document.getElementById('resultsMeta').innerHTML = `<strong>${rich.results.length}</strong> ${UI[lang].resultsFor} "${q}"`;
+    document.getElementById('resultsList').innerHTML = html;
+    enterSearchMode();
+    return;
+  }
 
-function starItem(key, e) {
-  e.stopPropagation(); Auth.toggleBookmark(key);
-  e.currentTarget.classList.toggle('starred', Auth.isBookmarked(key));
+  const dictRes = searchDict(q);
+  if (!dictRes.length) {
+    document.getElementById('resultsMeta').innerHTML = '';
+    document.getElementById('resultsList').innerHTML = `<div class="no-results">${UI[lang].noResults}</div>`;
+    enterSearchMode();
+    return;
+  }
+  let html = '';
+  dictRes.forEach(w => {
+    const def = w.defs && w.defs[0] ? w.defs[0].text : '';
+    const src = w.defs && w.defs[0] && w.defs[0].source ? w.defs[0].source : '';
+    html += renderCard(w.cree || null, w.pos||'', w.posLabel||w.pos||'', def, src?[src]:[], w.key);
+  });
+  document.getElementById('resultsMeta').innerHTML = `<strong>${dictRes.length}</strong> ${UI[lang].resultsFor} "${q}"`;
+  document.getElementById('resultsList').innerHTML = html;
+  enterSearchMode();
 }
-function renderDropdown(q) {
-  const dd=document.getElementById('dropdown'), inp=document.getElementById('searchInput');
-  if(!currentResults.length){dd.innerHTML=`<div class="drop-empty">${UI[lang].noResults}</div>`;dd.classList.add('visible');inp.classList.add('open');return;}
-  const hubKeys=new Set(Object.keys(DICT).filter(k=>DICT[k].category||DICT[k].synonyms));
-  const hubs=currentResults.filter(w=>hubKeys.has(w.key));
-  const spokes=currentResults.filter(w=>!hubKeys.has(w.key));
-  let html='';
-  const row=(w,i)=>{
-    const isPrimCree=lang==='cree'&&w.cree;
-    const primary=isPrimCree?highlight(w.cree,q):highlight(w.eng,q);
-    const secondary=isPrimCree?w.eng:(w.cree||'—');
-    const starred=Auth.isBookmarked(w.key);
-    return `<div class="drop-item" onclick="goResult(${JSON.stringify({key:w.key})})" data-idx="${i}">
-      <div class="drop-primary">${primary}</div>
-      <span class="drop-secondary">${secondary}</span>
-      <span class="drop-tag">${w.posLabel||w.pos}</span>
-      <span class="drop-star${starred?' starred':''}" title="Save word" onclick="starItem('${w.key}',event)">${STAR_ICON}</span>
-      <span class="drop-connect" title="Explore connections" onclick="event.stopPropagation();window.location.href='explorer.html?word=${encodeURIComponent(w.key)}'">${CONNECT_ICON}</span>
-    </div>`;
-  };
-  hubs.forEach((w,i)=>html+=row(w,i));
-  if(spokes.length){html+=`<div class="drop-divider">${lang==='cree'?'kâ-wîci-pîkiskwâtêmakak':'related words'}</div>`;spokes.forEach((w,i)=>html+=row(w,hubs.length+i));}
-  dd.innerHTML=html; dd.classList.add('visible'); inp.classList.add('open');
+
+function enterSearchMode() {
+  document.body.classList.add('searching');
+  document.getElementById('logoWrap').classList.add('hidden');
+  document.getElementById('hintText').classList.add('hidden');
+  document.getElementById('resultsSection').style.display = 'block';
 }
-function closeDropdown() { document.getElementById('dropdown').classList.remove('visible'); document.getElementById('searchInput').classList.remove('open'); focusedIdx=-1; }
-function onKeyDown(e) {
-  const items=document.querySelectorAll('.drop-item');
-  if(e.key==='ArrowDown'){e.preventDefault();focusedIdx=Math.min(focusedIdx+1,items.length-1);updateFocus(items);}
-  else if(e.key==='ArrowUp'){e.preventDefault();focusedIdx=Math.max(focusedIdx-1,-1);updateFocus(items);}
-  else if(e.key==='Enter'){e.preventDefault();if(focusedIdx>=0&&items[focusedIdx])items[focusedIdx].click();else goSearch();}
-  else if(e.key==='Escape')closeDropdown();
+
+function clearResults() {
+  document.body.classList.remove('searching');
+  document.getElementById('logoWrap').classList.remove('hidden');
+  document.getElementById('hintText').classList.remove('hidden');
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('resultsList').innerHTML = '';
+  document.getElementById('resultsMeta').innerHTML = '';
 }
-function updateFocus(items){items.forEach((el,i)=>el.classList.toggle('focused',i===focusedIdx));}
-document.addEventListener('click',e=>{if(!document.querySelector('.search-outer').contains(e.target))closeDropdown();});
 
 function micTap() {
-  const btn=document.getElementById('micBtn');
-  if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){
-    const SR=window.SpeechRecognition||window.webkitSpeechRecognition, rec=new SR();
-    rec.lang=lang==='cree'?'cr':'en-CA'; rec.interimResults=false; rec.maxAlternatives=1;
+  const btn = document.getElementById('micBtn');
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition, rec = new SR();
+    rec.lang = lang==='cree' ? 'cr' : 'en-CA'; rec.interimResults = false; rec.maxAlternatives = 1;
     btn.classList.add('listening'); rec.start();
-    rec.onresult=e=>{document.getElementById('searchInput').value=e.results[0][0].transcript;btn.classList.remove('listening');onInput();};
-    rec.onerror=rec.onend=()=>btn.classList.remove('listening');
-  } else { btn.classList.add('listening'); setTimeout(()=>btn.classList.remove('listening'),1200); }
+    rec.onresult = e => { document.getElementById('searchInput').value = e.results[0][0].transcript; btn.classList.remove('listening'); onInput(); };
+    rec.onerror = rec.onend = () => btn.classList.remove('listening');
+  } else { btn.classList.add('listening'); setTimeout(()=>btn.classList.remove('listening'), 1200); }
 }
+
 applyUI();
 </script>
 </body>
