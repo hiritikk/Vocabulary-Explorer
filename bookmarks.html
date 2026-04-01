@@ -39,6 +39,10 @@ body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;max
 .card-eng{font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;}
 .card-cree{font-family:'Lora',serif;font-size:20px;font-weight:600;color:var(--text);line-height:1.1;margin-bottom:5px;}
 .card-pos{font-size:10px;font-weight:500;padding:2px 8px;border-radius:99px;display:inline-block;letter-spacing:.04em;text-transform:uppercase;}
+.card-actions{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.explore-btn{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:99px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-size:11px;font-weight:500;font-family:'DM Sans',sans-serif;text-decoration:none;cursor:pointer;transition:background .15s,color .15s;}
+.explore-btn:active{background:var(--accent);color:#0c0800;border-color:var(--accent);}
+.explore-btn svg{width:11px;height:11px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
 .remove-btn{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:transparent;border:1px solid var(--border);
   cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s;}
 .remove-btn:active{background:rgba(224,122,84,0.12);border-color:rgba(224,122,84,0.3);}
@@ -134,16 +138,22 @@ function render() {
     const col=POS_COLORS_LOCAL[w.pos]||'#888';
     const primaryLabel=lang==='cree'?(w.cree||w.eng):w.eng;
     const secondaryLabel=lang==='cree'?w.eng:(w.cree||'');
-    html+=`<a class="word-card" href="explorer.html?word=${encodeURIComponent(w.key)}&open=1" style="--pos-col:${col}">
+    html+=`<div class="word-card" style="--pos-col:${col}">
       <div class="card-left">
         <div class="card-eng">${secondaryLabel}</div>
         <div class="card-cree">${primaryLabel}</div>
         <span class="card-pos" style="background:${col}22;color:${col};border:1px solid ${col}35">${w.posLabel||w.pos||''}</span>
       </div>
-      <button class="remove-btn" onclick="removeBm('${w.key}',event)" title="Remove bookmark">
-        <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </a>`;
+      <div class="card-actions">
+        <a class="explore-btn" href="explorer.html?word=${encodeURIComponent(w.key)}&open=1">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Explore
+        </a>
+        <button class="remove-btn" onclick="removeBm('${w.key}',event)" title="Remove bookmark">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>`;
   });
   wrap.innerHTML=html;
 }
