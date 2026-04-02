@@ -2,19 +2,21 @@
 
 A mobile-first web app for exploring Plains Cree vocabulary through an interactive node graph. Built for [ALTLab](https://altlab.ualberta.ca/) (University of Alberta Language Technology Lab) as part of CMPUT 302 (Winter 2026).
 
-Search a word, see how it connects to synonyms, antonyms, related categories, and word forms — with real pronunciation audio, syllabics script, and dictionary citations.
+Search a Cree or English word, tap **Explore** to see how it connects to related words — with pronunciation audio, syllabics script, and dictionary citations.
+
+**Live app:** https://hiritikk.github.io/Vocabulary-Explorer
 
 ---
 
 ## Features
 
-- **Interactive node graph** — visualize semantic relationships between Cree words
+- **Search** — full result cards with Cree word, syllabics, and English gloss; logo collapses on search
+- **Interactive node graph** — canvas-based visualization of semantic relationships (synonyms, antonyms, categories, word forms)
 - **Word detail** — definitions, IPA, syllabics (ᓀᐦᐃᔭᐍᐏᐣ), conjugations, example sentences
-- **Pronunciation audio** — real audio via [speech-db.altlab.app](https://speech-db.altlab.app)
-- **Bilingual UI** — toggle between English and Cree labels throughout
-- **Bookmarks** — save words to a personal collection (per-user, persisted in localStorage)
-- **Filter tabs** — switch graph view by Category, Synonyms, Antonyms, or Parts of speech
-- **Auth gate** — login / register (UAlberta emails only)
+- **Pronunciation audio** — real recordings via [speech-db.altlab.app](https://speech-db.altlab.app)
+- **Bilingual UI** — toggle between English and Cree labels (hidden during search)
+- **Bookmarks** — save words to a personal collection, with remove-confirmation dialog
+- **Graph filter tabs** — switch view by Category, Synonyms, Antonyms, or Parts of speech
 
 ---
 
@@ -22,11 +24,12 @@ Search a word, see how it connects to synonyms, antonyms, related categories, an
 
 | File | Description |
 |------|-------------|
-| `login.html` | Entry point — login, register, forgot password |
-| `index.html` | Search bar with fuzzy match and voice search |
-| `explorer.html` | Canvas-based node graph + bottom sheet word detail |
+| `index.html` | Search home — result cards, Explore button, language toggle |
+| `explorer.html` | Canvas node graph + bottom sheet word detail |
 | `word.html` | Standalone word detail page |
-| `bookmarks.html` | Saved words, tap to open graph with detail pre-loaded |
+| `bookmarks.html` | Saved words — tap to open graph with detail pre-loaded |
+
+> Login/auth was removed in this redesign. Bookmarks are stored in guest localStorage.
 
 ---
 
@@ -34,11 +37,9 @@ Search a word, see how it connects to synonyms, antonyms, related categories, an
 
 1. Clone the repo and open the folder in VS Code
 2. Install the [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) extension
-3. Right-click `login.html` → **Open with Live Server**
-4. Visit `localhost:5500/login.html` in your browser
-5. Use Chrome DevTools → phone icon (or F12) to simulate a mobile viewport
-
-**Demo account:** `student@ualberta.ca` / `00`
+3. Right-click `index.html` → **Open with Live Server**
+4. Visit `localhost:5500/index.html` in your browser
+5. Use Chrome DevTools → phone icon to simulate a mobile viewport (430px)
 
 ---
 
@@ -49,6 +50,8 @@ Search a word, see how it connects to synonyms, antonyms, related categories, an
 | cool | tahkâyâw | ᑕᐦᑳᔮᐤ |
 | walk | pimohcêw | ᐱᒧᐦᒉᐤ |
 | bear | maskwa | ᒪᐢᑿ |
+
+Results 3+ show a "Work in Progress" modal — full dictionary coverage is planned.
 
 ---
 
@@ -65,7 +68,7 @@ Vanilla HTML, CSS, and JavaScript. No frameworks, no build step, no dependencies
 
 ```
 dict.js       — single source of truth for all word data
-js/auth.js    — Auth module: login, register, logout, bookmark toggle
+js/auth.js    — bookmark toggle, guest localStorage
 ```
 
 ---
