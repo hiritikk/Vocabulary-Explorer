@@ -114,15 +114,15 @@ body.searching .toggle-wrap{display:none;}
   border-radius:14px;
   padding:16px 16px 14px;
   margin-bottom:10px;
-  cursor:default;
+  cursor:pointer;
   transition:border-color .15s, background .15s;
   display:block;
   text-decoration:none;
   -webkit-tap-highlight-color:transparent;
 }
 .result-card:active{
-  border-color:var(--border);
-  background:var(--surface);
+  border-color:rgba(193,127,36,0.4);
+  background:var(--surface2);
 }
 .rc-header{
   display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
@@ -374,10 +374,13 @@ function renderCard(creeWord, pos, posLabel, def, sources, hubKey, idx) {
   const displayWord = creeWord || hubKey;
   const srcs = sources.filter(Boolean).map(s=>`<span class="rc-src">${s}</span>`).join('');
   const starred = Auth.isBookmarked(hubKey);
-  const exploreAction = idx >= 2
+  const cardAction = idx >= 2
     ? `document.getElementById('wipOverlay').classList.remove('hidden')`
-    : `window.location.href='explorer.html?word=${encodeURIComponent(hubKey)}'`;
-  return `<div class="result-card">
+    : `window.location.href='word.html?word=${encodeURIComponent(hubKey)}'`;
+  const exploreAction = idx >= 2
+    ? `event.stopPropagation();document.getElementById('wipOverlay').classList.remove('hidden')`
+    : `event.stopPropagation();window.location.href='explorer.html?word=${encodeURIComponent(hubKey)}'`;
+  return `<div class="result-card" onclick="${cardAction}">
   <div class="rc-header">
     <div class="${wordClass}">${displayWord}</div>
     <span class="${posClass(pos)}">${pos}</span>
@@ -385,7 +388,7 @@ function renderCard(creeWord, pos, posLabel, def, sources, hubKey, idx) {
   <div class="rc-pos-label">${posLabel}</div>
   <div class="rc-def">${def}${srcs}</div>
   <div class="rc-footer">
-    <button class="rc-bookmark${starred?' starred':''}" title="Save word" onclick="toggleBookmark('${hubKey}',this)">${STAR_ICON}</button>
+    <button class="rc-bookmark${starred?' starred':''}" title="Save word" onclick="event.stopPropagation();toggleBookmark('${hubKey}',this)">${STAR_ICON}</button>
     <span class="rc-explore" onclick="${exploreAction}">${EXPLORE_ICON} Explore in graph</span>
   </div>
 </div>`;
