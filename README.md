@@ -10,7 +10,7 @@ Search a Cree or English word, tap **Explore** to see how it connects to related
 | Name | CCID |
 |------|-------------|
 | `Hiritikk Kumar` | hiritikk |
-| `` | |
+| `Dhruv Kairon` | kairon |
 | `` |  |
 | `` |  |
 
