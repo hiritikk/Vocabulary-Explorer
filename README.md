@@ -6,6 +6,16 @@ Search a Cree or English word, tap **Explore** to see how it connects to related
 
 **Live app:** https://hiritikk.github.io/Vocabulary-Explorer
 
+## Team Members 
+| Name | CCID |
+|------|-------------|
+| `Hiritikk Kumar` | hiritikk |
+| `` | |
+| `` |  |
+| `` |  |
+
+
+
 ---
 
 ## Features
